@@ -34,6 +34,24 @@ test('manual order charges and discounts cannot make a negative total', () => {
   assert.equal(adminOrderSchema.safeParse({ customerName: 'A', customerPhone: '123' }).success, false);
 });
 
+test('in-person orders accept blank details and validate details when supplied', () => {
+  const minimum = {
+    items: [{ productSlug: 'tee', color: 'Black', size: 'M', quantity: 1 }],
+    paidNow: false,
+    paymentMethod: 'COD',
+    clientRequestId: 'walk-in-test-1'
+  };
+  const parsed = adminOrderSchema.safeParse(minimum);
+  assert.equal(parsed.success, true);
+  if (parsed.success) {
+    assert.equal(parsed.data.customerEmail, '');
+    assert.equal(parsed.data.customerPhone, '');
+    assert.equal(parsed.data.note, '');
+  }
+  assert.equal(adminOrderSchema.safeParse({ ...minimum, customerEmail: 'invalid' }).success, false);
+  assert.equal(adminOrderSchema.safeParse({ ...minimum, customerPhone: '123' }).success, false);
+});
+
 test('verified payment must match amount and currency', () => {
   assert.equal(adjudicatePayment({ status: 'success', currency: 'GHS', amount: 10200 }, 102).outcome, 'paid');
   assert.equal(adjudicatePayment({ status: 'success', currency: 'GHS', amount: 10199 }, 102).outcome, 'mismatch');

@@ -77,22 +77,22 @@ export const directOrderSchema = customerSchema
  * Body accepted by `POST /api/admin/orders/create` — an order the merchant
  * recorded by hand for someone standing in front of them.
  *
- * The admin records complete customer and delivery details for each order.
+ * Customer and delivery details can be filled in later for an in-person order.
  *
  * The money fields are inputs to a calculation, never the calculation's result.
  * The server prices every line from the database and works the discount out
  * itself, exactly as it does for a customer's own checkout.
  */
 export const adminOrderSchema = z.object({
-  customerName: z.string().trim().min(2).max(255),
-  customerPhone: z.string().trim().min(8).max(100).refine(
-    (phone) => isValidGhanaPhone(formatGhanaPhone(phone)),
+  customerName: z.string().trim().max(255).optional().default(''),
+  customerPhone: z.string().trim().max(100).refine(
+    (phone) => !phone || isValidGhanaPhone(formatGhanaPhone(phone)),
     'Enter a valid Ghanaian phone number.'
-  ),
+  ).optional().default(''),
   sendSmsNow: z.boolean().optional(),
-  customerEmail: z.string().trim().email().max(255),
-  shippingAddress: z.string().trim().min(5).max(500),
-  shippingCity: z.string().trim().min(2).max(255),
+  customerEmail: z.union([z.string().trim().email().max(255), z.literal('')]).optional().default(''),
+  shippingAddress: z.string().trim().max(500).optional().default(''),
+  shippingCity: z.string().trim().max(255).optional().default(''),
   // Unlike the storefront, there is no single-product fallback shape here, so
   // every line must name its own product.
   items: z.array(orderItemSchema.extend({ productSlug: z.string().trim().min(1).max(255) })).min(1).max(50),
@@ -105,13 +105,13 @@ export const adminOrderSchema = z.object({
   /** Printing, customisation, delivery — anything that is not a catalogue piece. */
   extras: z.array(orderExtraSchema).max(20).optional(),
 
-  discountType: z.enum(['amount', 'percent']),
-  discountValue: z.number().nonnegative().max(1_000_000),
+  discountType: z.enum(['amount', 'percent']).optional(),
+  discountValue: z.number().nonnegative().max(1_000_000).optional(),
 
   /** Sells a variant the catalogue believes is sold out. */
   allowOutOfStock: z.boolean().optional(),
   fulfilmentStatus: z.enum(['Pending', 'Processing', 'Shipped', 'Delivered']).optional(),
-  note: z.string().trim().min(1).max(400),
+  note: z.string().trim().max(400).optional().default(''),
 
   /** Idempotency key. The same key can only ever produce one order. */
   clientRequestId: z.string().trim().min(8).max(80)

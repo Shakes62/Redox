@@ -119,6 +119,7 @@ export async function POST(request: Request) {
     // 3. Reserve stock and persist the order together.
     const primary = draft.items[0];
     const paidNow = input.paidNow === true;
+    const sendSmsNow = input.sendSmsNow === true && Boolean(input.customerPhone);
     const now = new Date().toISOString();
 
     const noteParts = [input.note?.trim(), input.allowOutOfStock ? 'Sold past the recorded stock level.' : '']
@@ -144,7 +145,7 @@ export async function POST(request: Request) {
         extras,
         discount,
         price: grandTotal,
-        customerName: input.customerName,
+        customerName: input.customerName || 'Walk-in customer',
         customerPhone: input.customerPhone,
         customerEmail: input.customerEmail,
         shippingAddress: input.shippingAddress,
@@ -154,7 +155,7 @@ export async function POST(request: Request) {
         stockReserved: paidNow,
         stockReleased: false,
         smsSent: false,
-        smsDeferred: input.sendSmsNow === false,
+        smsDeferred: !sendSmsNow,
 
         ...(paidNow
           ? {
@@ -212,29 +213,29 @@ export async function POST(request: Request) {
     //    guaranteed to finish once a serverless function has already returned.
     //    A failure here is reported, never fatal: the order exists either way,
     //    and the panel offers a Resend button.
-    const smsSent = input.sendSmsNow === false ? false : await notifyOrderOnce(order);
+    const smsSent = sendSmsNow ? await notifyOrderOnce(order) : false;
     const msisdn = formatGhanaPhone(order.customerPhone);
 
     console.log(
       `[admin-order] Order #RD-${order.id} created in the panel — GH₵${grandTotal.toFixed(2)}` +
         `${extrasTotal > 0 ? ` (incl. GH₵${extrasTotal.toFixed(2)} services)` : ''}` +
         `${discount > 0 ? ` (GH₵${discount.toFixed(2)} off)` : ''}, ` +
-        `${paidNow ? 'paid' : 'unpaid'}, SMS ${input.sendSmsNow === false ? 'deferred' : smsSent ? 'sent' : 'not sent'}.`
+        `${paidNow ? 'paid' : 'unpaid'}, SMS ${!sendSmsNow ? 'deferred' : smsSent ? 'sent' : 'not sent'}.`
     );
 
     return NextResponse.json({
       success: true,
       duplicate: false,
       smsSent,
-      smsReason: input.sendSmsNow === false
-        ? 'SMS is saved for later. Open the order to edit the number or send it.'
+      smsReason: !sendSmsNow
+        ? 'SMS is saved for later. Add a phone number in Orders when ready to send it.'
         : smsSent
         ? undefined
         : isValidGhanaPhone(msisdn)
         ? 'The SMS gateway did not accept the message. You can resend it from the orders table.'
         : `"${order.customerPhone}" is not a valid Ghanaian number, so no text was sent.`,
       message: `Order #RD-${order.id} created.`,
-      order: { ...order, smsSent, smsDeferred: input.sendSmsNow === false }
+      order: { ...order, smsSent, smsDeferred: !sendSmsNow }
     });
   } catch (error: any) {
     console.error('API admin order create error:', error);

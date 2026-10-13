@@ -137,12 +137,12 @@ export async function POST(request: Request) {
         discount,
         price: newTotal,
         amountPaid: order.paymentStatus === 'paid' && newTotal > (order.amountPaid ?? order.price) ? newTotal : order.amountPaid,
-        customerName: input.customerName,
+        customerName: input.customerName || 'Walk-in customer',
         customerPhone: input.customerPhone,
-        customerEmail: input.customerEmail || order.customerEmail,
-        shippingAddress: input.shippingAddress || order.shippingAddress,
-        shippingCity: input.shippingCity || order.shippingCity,
-        paymentNote: input.note || order.paymentNote
+        customerEmail: input.customerEmail,
+        shippingAddress: input.shippingAddress,
+        shippingCity: input.shippingCity,
+        paymentNote: input.note
       }, input.allowOutOfStock === true);
       return NextResponse.json({ success: true, order: updated, message: `Order #RD-${orderId} updated.` });
     }

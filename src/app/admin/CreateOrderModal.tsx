@@ -147,9 +147,9 @@ export function CreateOrderModal({ products, initialOrder, onClose, onCreated, o
     };
   }));
 
-  const [customerName, setCustomerName] = useState(initialOrder?.customerName || '');
+  const [customerName, setCustomerName] = useState(initialOrder?.customerName === 'Walk-in customer' ? '' : initialOrder?.customerName || '');
   const [customerPhone, setCustomerPhone] = useState(initialOrder?.customerPhone || '');
-  const [sendSmsNow, setSendSmsNow] = useState(true);
+  const [sendSmsNow, setSendSmsNow] = useState(false);
   const [customerEmail, setCustomerEmail] = useState(initialOrder?.customerEmail || '');
   const [shippingAddress, setShippingAddress] = useState(initialOrder?.shippingAddress || '');
   const [shippingCity, setShippingCity] = useState(initialOrder?.shippingCity || '');
@@ -163,7 +163,7 @@ export function CreateOrderModal({ products, initialOrder, onClose, onCreated, o
   })));
 
   const [discountType, setDiscountType] = useState<'amount' | 'percent'>('amount');
-  const [discountValue, setDiscountValue] = useState(String(initialOrder?.discount ?? 0));
+  const [discountValue, setDiscountValue] = useState(initialOrder?.discount ? String(initialOrder.discount) : '');
 
   const [isCreating, setIsCreating] = useState(false);
   const [error, setError] = useState('');
@@ -363,7 +363,7 @@ export function CreateOrderModal({ products, initialOrder, onClose, onCreated, o
     .filter((extra) => extra.label.length > 0 && Number.isFinite(extra.amount) && extra.amount > 0)
     .map((extra) => ({ label: extra.label, amount: round2(extra.amount) }));
 
-  const incompleteExtras = extras.length - validExtras.length;
+  const incompleteExtras = extras.filter((extra) => extra.label.trim() || extra.amount.trim()).length - validExtras.length;
 
   // ── Money ─────────────────────────────────────────────────────
   // Bulk pricing applies to in-person orders too, and the server will apply it
@@ -400,25 +400,17 @@ export function CreateOrderModal({ products, initialOrder, onClose, onCreated, o
 
   const canSubmit =
     lines.length > 0 &&
-    customerName.trim().length >= 2 &&
-    phoneValid &&
-    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customerEmail.trim()) &&
-    shippingCity.trim().length >= 2 &&
-    shippingAddress.trim().length >= 5 &&
-    discountValue.trim().length > 0 && Number.isFinite(Number(discountValue)) && Number(discountValue) >= 0 &&
-    note.trim().length > 0 &&
+    (!phoneTouched || phoneValid) &&
+    (!customerEmail.trim() || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customerEmail.trim())) &&
+    (!discountValue.trim() || (Number.isFinite(Number(discountValue)) && Number(discountValue) >= 0)) &&
     incompleteExtras === 0 &&
     !isCreating;
 
   const nextStep =
     lines.length === 0 ? 'Add at least one item.' :
-    customerName.trim().length < 2 ? 'Enter the customer name.' :
-    !phoneValid ? 'Enter a valid Ghanaian phone number.' :
-    !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customerEmail.trim()) ? 'Enter a valid customer email.' :
-    shippingCity.trim().length < 2 ? 'Select the customer region.' :
-    shippingAddress.trim().length < 5 ? 'Enter the delivery or collection address.' :
-    !discountValue.trim() || !Number.isFinite(Number(discountValue)) || Number(discountValue) < 0 ? 'Enter a discount amount, or 0 for none.' :
-    !note.trim() ? 'Enter an order note.' :
+    phoneTouched && !phoneValid ? 'Check the phone number or leave it blank.' :
+    customerEmail.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customerEmail.trim()) ? 'Check the email address or leave it blank.' :
+    discountValue.trim() && (!Number.isFinite(Number(discountValue)) || Number(discountValue) < 0) ? 'Check the discount or leave it blank.' :
     incompleteExtras > 0 ? 'Complete or remove the unfinished extra charge.' : null;
 
   // ── Submit ────────────────────────────────────────────────────
@@ -458,7 +450,7 @@ export function CreateOrderModal({ products, initialOrder, onClose, onCreated, o
           paymentMethod: paidNow ? paymentMethod : 'COD',
           extras: validExtras,
           discountType,
-          discountValue: Number(discountValue) || 0,
+          discountValue: discountValue.trim() ? Number(discountValue) : undefined,
           allowOutOfStock: hasOverride,
           note: note.trim(),
           clientRequestId
@@ -529,12 +521,12 @@ export function CreateOrderModal({ products, initialOrder, onClose, onCreated, o
     setLines([]);
     setCustomerName('');
     setCustomerPhone('');
-    setSendSmsNow(true);
+    setSendSmsNow(false);
     setCustomerEmail('');
     setShippingAddress('');
     setShippingCity('');
     setExtras([]);
-    setDiscountValue('0');
+    setDiscountValue('');
     setDiscountType('amount');
     setNote('');
     setPaidNow(false);
@@ -955,7 +947,7 @@ export function CreateOrderModal({ products, initialOrder, onClose, onCreated, o
 
             <div className={styles.formGrid}>
               <div className={styles.field}>
-                <label className={styles.fieldLabel}>Full Name *</label>
+                <label className={styles.fieldLabel}>Full Name</label>
                 <input
                   className={styles.input}
                   onChange={(event) => setCustomerName(event.target.value)}
@@ -966,11 +958,14 @@ export function CreateOrderModal({ products, initialOrder, onClose, onCreated, o
               </div>
 
               <div className={styles.field}>
-                <label className={styles.fieldLabel}>Phone * (receives the SMS)</label>
+                <label className={styles.fieldLabel}>Phone (for SMS)</label>
                 <input
                   className={styles.input}
                   inputMode="tel"
-                  onChange={(event) => setCustomerPhone(event.target.value)}
+                  onChange={(event) => {
+                    setCustomerPhone(event.target.value);
+                    if (!isValidGhanaPhone(formatGhanaPhone(event.target.value))) setSendSmsNow(false);
+                  }}
                   placeholder="024 XXX XXXX"
                   type="tel"
                   value={customerPhone}
@@ -979,7 +974,7 @@ export function CreateOrderModal({ products, initialOrder, onClose, onCreated, o
                   <p className={`${styles.hint} ${phoneValid ? styles.hintOk : styles.hintWarn}`}>
                     {phoneValid
                       ? initialOrder ? `Valid number: ${msisdn}. Use Edit phone / SMS in Orders to send a text.` : sendSmsNow ? `✓ SMS will be sent to ${msisdn}` : `Number saved for SMS later: ${msisdn}`
-                      : initialOrder ? 'Enter a valid Ghanaian number.' : sendSmsNow ? '⚠ Not a valid Ghana number — the order will save, but no SMS can be sent.' : 'You can correct this number before sending SMS later.'}
+                      : 'Check the Ghanaian number or leave it blank.'}
                   </p>
                 )}
               </div>
@@ -987,7 +982,7 @@ export function CreateOrderModal({ products, initialOrder, onClose, onCreated, o
               {!initialOrder && <fieldset className={`${styles.smsTiming} ${styles.formGridFull}`}>
                 <legend>Confirmation SMS</legend>
                 <label className={styles.smsTimingOption}>
-                  <input checked={sendSmsNow} name="create-order-sms" onChange={() => setSendSmsNow(true)} type="radio" />
+                  <input checked={sendSmsNow} disabled={!phoneValid} name="create-order-sms" onChange={() => setSendSmsNow(true)} type="radio" />
                   <span><strong>Send now</strong><small>Text the customer after the order is saved.</small></span>
                 </label>
                 <label className={styles.smsTimingOption}>
@@ -998,19 +993,18 @@ export function CreateOrderModal({ products, initialOrder, onClose, onCreated, o
 
               <p className={`${styles.orderBlockTitle} ${styles.formGridFull}`}>Delivery and contact details</p>
               <div className={styles.field}>
-                <label className={styles.fieldLabel}>Email *</label>
+                <label className={styles.fieldLabel}>Email</label>
                 <input
                   className={styles.input}
                   onChange={(event) => setCustomerEmail(event.target.value)}
                   placeholder="customer@example.com"
-                  required
                   type="email"
                   value={customerEmail}
                 />
               </div>
 
               <div className={styles.field}>
-                <label className={styles.fieldLabel}>Region *</label>
+                <label className={styles.fieldLabel}>Region</label>
                 <select
                   className={styles.select}
                   onChange={(event) => setShippingCity(event.target.value)}
@@ -1026,12 +1020,11 @@ export function CreateOrderModal({ products, initialOrder, onClose, onCreated, o
               </div>
 
               <div className={`${styles.field} ${styles.formGridFull}`}>
-                <label className={styles.fieldLabel}>Delivery or collection address *</label>
+                <label className={styles.fieldLabel}>Delivery or collection address</label>
                 <input
                   className={styles.input}
                   onChange={(event) => setShippingAddress(event.target.value)}
                   placeholder="House No., Street, Area or collection location"
-                  required
                   type="text"
                   value={shippingAddress}
                 />
@@ -1095,13 +1088,12 @@ export function CreateOrderModal({ products, initialOrder, onClose, onCreated, o
 
             <p className={styles.orderBlockTitle}>Discount and note</p>
             <div className={styles.field} style={{ marginTop: 'var(--space-4)' }}>
-              <label className={styles.fieldLabel}>Discount * (enter 0 for none)</label>
+              <label className={styles.fieldLabel}>Discount</label>
               <div style={{ display: 'flex', gap: '6px' }}>
                 <input
                   className={styles.input}
                   inputMode="decimal"
                   min="0"
-                  required
                   onChange={(event) => setDiscountValue(event.target.value)}
                   placeholder="0"
                   step="0.01"
@@ -1133,12 +1125,11 @@ export function CreateOrderModal({ products, initialOrder, onClose, onCreated, o
             </div>
 
             <div className={styles.field} style={{ marginTop: 'var(--space-4)' }}>
-              <label className={styles.fieldLabel}>Order note *</label>
+              <label className={styles.fieldLabel}>Order note</label>
               <input
                 className={styles.input}
                 onChange={(event) => setNote(event.target.value)}
                 placeholder="e.g. Collected at the shop, paid in cash"
-                required
                 type="text"
                 value={note}
               />

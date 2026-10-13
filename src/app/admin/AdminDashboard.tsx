@@ -1955,9 +1955,9 @@ export function AdminDashboard({
                         )}
                       </td>
                       <td data-label="Customer" style={{ padding: 'var(--space-3)' }}>
-                        <div style={{ fontWeight: 'bold', color: '#fff' }}>{o.customerName}</div>
-                        <div style={{ color: '#aaa', fontSize: '0.75rem' }}>{o.customerPhone}</div>
-                        <div style={{ color: '#777', fontSize: '0.7rem' }}>{o.customerEmail}</div>
+                        <div style={{ fontWeight: 'bold', color: '#fff' }}>{o.customerName || 'Walk-in customer'}</div>
+                        <div style={{ color: '#aaa', fontSize: '0.75rem' }}>{o.customerPhone || 'No phone'}</div>
+                        <div style={{ color: '#777', fontSize: '0.7rem' }}>{o.customerEmail || 'No email'}</div>
                         {o.source === 'admin' && !o.smsSent && <span className={styles.smsNotSentBadge}>SMS not sent</span>}
                       </td>
                       <td data-label="Items" style={{ padding: 'var(--space-3)', minWidth: '260px' }}>
@@ -2011,8 +2011,8 @@ export function AdminDashboard({
                         )}
                       </td>
                       <td data-label="Ship to" style={{ padding: 'var(--space-3)' }}>
-                        <div style={{ color: '#f5f3ee' }}>{o.shippingAddress}</div>
-                        <div style={{ color: '#888', fontSize: '0.75rem' }}>{o.shippingCity}</div>
+                        <div style={{ color: '#f5f3ee' }}>{o.shippingAddress || 'No address'}</div>
+                        <div style={{ color: '#888', fontSize: '0.75rem' }}>{o.shippingCity || 'No region'}</div>
                         {o.deliveryMethod && o.deliveryMethod !== 'none' && <div style={{ color: o.deliveryMethod === 'urgent' ? '#f5b459' : '#aaa', fontSize: '0.72rem', marginTop: '4px' }}>{o.deliveryMethod === 'urgent' ? `${URGENT_STATION_DELIVERY_LABEL} · +${formatCurrency(o.deliveryFee || 0)}` : `${FREE_STATION_DELIVERY_LABEL} · Monday, Wednesday and Friday`}</div>}
                       </td>
                       <td data-label="Payment" style={{ padding: 'var(--space-3)', verticalAlign: 'top' }}>
