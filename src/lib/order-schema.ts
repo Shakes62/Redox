@@ -29,7 +29,9 @@ export const customerSchema = z.object({
   customerEmail: z.string().trim().email().max(255),
   shippingAddress: z.string().trim().min(5).max(500),
   shippingCity: z.string().trim().min(2).max(255),
-  deliveryMethod: z.enum(['standard', 'urgent']).optional()
+  deliveryMethod: z.enum(['standard', 'urgent']).optional(),
+  /** A town from the merchant's delivery list. Its price is looked up server-side. */
+  deliveryLocationId: z.string().trim().min(1).max(60).optional()
 });
 
 const basketShape = {

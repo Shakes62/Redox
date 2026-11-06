@@ -1,3 +1,5 @@
+import type { DeliveryMethod } from '@/lib/delivery';
+
 export type ProductCategory = string;
 
 export interface Variant {
@@ -146,9 +148,9 @@ export interface Order {
   /** Sum of the product lines alone. Extras and discounts sit outside it. */
   subtotal: number;
   serviceCharge: number;
-  /** Extra amount charged for urgent station delivery; zero for free station or local orders. */
+  /** Delivery charge: a listed town's price, plus any urgent surcharge. Zero for free delivery. */
   deliveryFee?: number;
-  deliveryMethod?: 'none' | 'standard' | 'urgent';
+  deliveryMethod?: DeliveryMethod;
   /** Non-product charges: printing, customisation, delivery. Empty for web orders. */
   extras: OrderExtra[];
   /**

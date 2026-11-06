@@ -15,7 +15,8 @@
   gap: var(--space-6);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
-  background: rgba(15, 15, 15, 0.72);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
   padding: var(--space-5);
 }
 
@@ -50,7 +51,7 @@
 .filterButton:hover,
 .filterActive {
   border-color: var(--color-red);
-  background: rgba(215, 38, 56, 0.08);
+  background: var(--accent-soft);
   color: var(--color-white);
 }
 
@@ -99,7 +100,9 @@
 
 .empty h2 {
   margin: 0;
-  font-family: var(--font-heading), sans-serif;
+  font-family: var(--font-display);
+  font-variation-settings: var(--display-width);
+  font-weight: 800;
   font-size: var(--text-3xl);
   text-transform: uppercase;
 }

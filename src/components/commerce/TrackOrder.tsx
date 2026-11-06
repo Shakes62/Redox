@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { formatCurrency } from '@/lib/format';
-import { FREE_STATION_DELIVERY_DETAILS, FREE_STATION_DELIVERY_LABEL, URGENT_STATION_DELIVERY_LABEL } from '@/lib/delivery';
+import { describeDelivery, type DeliveryMethod } from '@/lib/delivery';
 import styles from './TrackOrder.module.css';
 
 interface TrackedItem {
@@ -24,7 +24,7 @@ interface TrackedOrder {
   price: number;
   discount?: number;
   serviceCharge?: number;
-  deliveryMethod?: 'none' | 'standard' | 'urgent';
+  deliveryMethod?: DeliveryMethod;
   deliveryFee?: number;
 }
 
@@ -133,7 +133,15 @@ export function TrackOrder() {
               {order.extras?.map((extra, index) => (
                 <div className={styles.line} key={`${extra.label}-${index}`}><span>{extra.label}</span><span>{formatCurrency(Number(extra.amount))}</span></div>
               ))}
-              {order.deliveryMethod && order.deliveryMethod !== 'none' && <div className={styles.line}><span>{order.deliveryMethod === 'urgent' ? URGENT_STATION_DELIVERY_LABEL : `${FREE_STATION_DELIVERY_LABEL} · ${FREE_STATION_DELIVERY_DETAILS}`}</span><span>{formatCurrency(order.deliveryFee || 0)}</span></div>}
+              {order.deliveryMethod && order.deliveryMethod !== 'none' && (
+                <div className={styles.line}>
+                  <div>
+                    <strong>{describeDelivery(order.deliveryMethod, order.deliveryFee).label}</strong>
+                    <small>{describeDelivery(order.deliveryMethod, order.deliveryFee).detail}</small>
+                  </div>
+                  <span>{order.deliveryFee ? formatCurrency(order.deliveryFee) : 'Free'}</span>
+                </div>
+              )}
               <div className={`${styles.line} ${styles.total}`}><strong>Total</strong><strong>{formatCurrency(Number(order.price))}</strong></div>
               {Number(order.discount) > 0 && <p className={styles.small}>Includes {formatCurrency(Number(order.discount))} discount.</p>}
               {Number(order.serviceCharge) > 0 && <p className={styles.small}>Includes service charge.</p>}

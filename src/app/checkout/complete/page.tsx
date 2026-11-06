@@ -14,7 +14,7 @@ export default function CheckoutCompletePage() {
   return (
     <Suspense
       fallback={
-        <div style={{ padding: '160px 24px', textAlign: 'center', color: '#888', fontFamily: 'monospace' }}>
+        <div style={{ padding: '160px 24px', textAlign: 'center', color: 'var(--fg-2)' }}>
           Confirming your payment…
         </div>
       }

@@ -1,3 +1,4 @@
+import type { DeliveryMethod } from '@/lib/delivery';
 import type { Order, OrderExtra, PaymentStatus } from '@/types/product';
 
 /**
@@ -15,7 +16,7 @@ export interface CustomerReceipt {
   subtotal: number;
   serviceCharge: number;
   deliveryFee: number;
-  deliveryMethod: 'none' | 'standard' | 'urgent';
+  deliveryMethod: DeliveryMethod;
   /** Printing, customisation and the like — the customer paid for these too. */
   extras: OrderExtra[];
   discount: number;

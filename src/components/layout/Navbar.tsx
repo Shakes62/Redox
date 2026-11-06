@@ -4,15 +4,18 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
-import { BagIcon, HeartIcon, MenuIcon, SearchIcon, UserIcon, XIcon } from '@/components/ui/Icons';
+import { ThemeToggle } from '@/components/theme/ThemeToggle';
+import { BagIcon, ChevronRightIcon, HeartIcon, MenuIcon, SearchIcon, XIcon } from '@/components/ui/Icons';
 import { getCartTotals, useCartStore } from '@/store/cart.store';
 import { useWishlistStore } from '@/store/wishlist.store';
 import styles from './Navbar.module.css';
 
 const NAV_LINKS = [
   { href: '/shop', label: 'Shop' },
-  { href: '/track-order', label: 'Track Order' },
+  { href: '/track-order', label: 'Track Order' }
 ];
+
+const MENU_LINKS = [...NAV_LINKS, { href: '/search', label: 'Search' }];
 
 export function Navbar() {
   const pathname = usePathname();
@@ -33,17 +36,17 @@ export function Navbar() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  // Close mobile menu on route change
-  useEffect(() => { setMobileOpen(false); }, [pathname]);
-
-  // Lock body scroll when mobile menu is open
-  useEffect(() => {
-    document.body.style.overflow = mobileOpen ? 'hidden' : '';
-    return () => { document.body.style.overflow = ''; };
-  }, [mobileOpen]);
+  // Close the menu whenever the page changes.
+  const [lastPath, setLastPath] = useState(pathname);
+  if (lastPath !== pathname) {
+    setLastPath(pathname);
+    setMobileOpen(false);
+  }
 
   useEffect(() => {
     if (!mobileOpen) return;
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
     mobilePanelRef.current?.querySelector('a')?.focus();
     const onKey = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
@@ -52,34 +55,39 @@ export function Navbar() {
       }
     };
     window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
+    return () => {
+      document.body.style.overflow = previous;
+      window.removeEventListener('keydown', onKey);
+    };
   }, [mobileOpen]);
+
+  const isActive = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
 
   return (
     <>
-      <nav
-        aria-label="Main navigation"
-        className={`${styles.nav} ${scrolled ? styles.navScrolled : ''}`}
-      >
+      <nav aria-label="Main navigation" className={`${styles.nav} ${scrolled || mobileOpen ? styles.navScrolled : ''}`}>
         <div className={styles.inner}>
-          {/* Left: hamburger (mobile) + links (desktop) */}
           <div className={styles.left}>
             <button
-              aria-expanded={mobileOpen}
               aria-controls="mobile-navigation"
+              aria-expanded={mobileOpen}
               aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
               className={styles.menuButton}
-              onClick={() => setMobileOpen((o) => !o)}
+              onClick={() => setMobileOpen((open) => !open)}
               ref={menuButtonRef}
               type="button"
             >
-              {mobileOpen ? <XIcon /> : <MenuIcon />}
+              <span className={`${styles.menuIcon} ${mobileOpen ? styles.menuIconOpen : ''}`}>
+                <MenuIcon />
+                <XIcon />
+              </span>
             </button>
 
             <div className={styles.links}>
               {NAV_LINKS.map((link) => (
                 <Link
-                  className={`${styles.navLink} ${pathname.startsWith(link.href) ? styles.navLinkActive : ''}`}
+                  aria-current={isActive(link.href) ? 'page' : undefined}
+                  className={`${styles.navLink} ${isActive(link.href) ? styles.navLinkActive : ''}`}
                   href={link.href}
                   key={link.href}
                 >
@@ -89,34 +97,19 @@ export function Navbar() {
             </div>
           </div>
 
-          {/* Center: logo */}
           <Link aria-label="REDOXDESIGNX home" className={styles.logo} href="/">
-            <Image
-              alt="REDOXDESIGNX"
-              className={styles.logoImg}
-              height={38}
-              src="/icon1?brand=2"
-              unoptimized
-              width={38}
-            />
+            <Image alt="" className={styles.logoImg} height={36} src="/icon1?brand=2" unoptimized width={36} />
             <span className={styles.logoText}>REDOXDESIGNX</span>
           </Link>
 
-          {/* Right: action icons */}
           <div className={styles.actions}>
             <Link aria-label="Search" className={`${styles.iconButton} ${styles.hideMobile}`} href="/search">
               <SearchIcon />
             </Link>
-            <Link
-              aria-label={`Wishlist: ${wishlistCount} saved`}
-              className={styles.iconButton}
-              href="/account/wishlist"
-            >
+            <ThemeToggle />
+            <Link aria-label={`Wishlist: ${wishlistCount} saved`} className={styles.iconButton} href="/account/wishlist">
               <HeartIcon />
               {wishlistCount > 0 && <span className={styles.count}>{wishlistCount}</span>}
-            </Link>
-            <Link aria-label="Account" className={`${styles.iconButton} ${styles.hideMobile}`} href="/account">
-              <UserIcon />
             </Link>
             <button
               aria-label={`Cart: ${totalItems} items`}
@@ -125,42 +118,41 @@ export function Navbar() {
               type="button"
             >
               <BagIcon />
-              {totalItems > 0 && <span className={styles.count}>{totalItems}</span>}
+              {totalItems > 0 && (
+                <span className={styles.count} key={totalItems}>
+                  {totalItems}
+                </span>
+              )}
             </button>
           </div>
         </div>
       </nav>
 
-      {/* Mobile overlay */}
-      <button
+      <div
         aria-hidden="true"
         className={`${styles.mobileOverlay} ${mobileOpen ? styles.mobileOverlayOpen : ''}`}
         onClick={() => setMobileOpen(false)}
-        tabIndex={-1}
-        type="button"
       />
 
-      {/* Mobile panel */}
       <div
         aria-hidden={!mobileOpen}
         className={`${styles.mobilePanel} ${mobileOpen ? styles.mobilePanelOpen : ''}`}
         id="mobile-navigation"
+        inert={!mobileOpen}
         ref={mobilePanelRef}
       >
         <div className={styles.mobilePanelInner}>
-          {[...NAV_LINKS, { href: '/search', label: 'Search' }, { href: '/account', label: 'Account' }].map(
-            (link) => (
-              <Link
-                className={`${styles.mobileLink} ${pathname.startsWith(link.href) ? styles.mobileLinkActive : ''}`}
-                href={link.href}
-                key={link.href}
-                tabIndex={mobileOpen ? 0 : -1}
-              >
-                {link.label}
-                <span className={styles.mobileLinkArrow}>→</span>
-              </Link>
-            )
-          )}
+          {MENU_LINKS.map((link, index) => (
+            <Link
+              className={`${styles.mobileLink} ${isActive(link.href) ? styles.mobileLinkActive : ''}`}
+              href={link.href}
+              key={link.href}
+              style={{ transitionDelay: mobileOpen ? `${60 + index * 35}ms` : '0ms' }}
+            >
+              <span>{link.label}</span>
+              <ChevronRightIcon className={styles.mobileLinkArrow} />
+            </Link>
+          ))}
         </div>
       </div>
     </>

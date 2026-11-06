@@ -65,6 +65,7 @@ export const useWishlistStore = create<WishlistStore>()(
       name: 'redox-wishlist',
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({ items: state.items }),
+      skipHydration: true,
       onRehydrateStorage: () => (state) => {
         state?.setHydrated(true);
       }

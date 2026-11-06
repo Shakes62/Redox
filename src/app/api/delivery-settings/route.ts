@@ -1,11 +1,14 @@
 import { NextResponse } from 'next/server';
+import { activeLocations } from '@/lib/delivery';
 import { getDeliverySettings } from '@/lib/delivery-settings-db';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {
-    return NextResponse.json(await getDeliverySettings(), {
+    const settings = await getDeliverySettings();
+    // Customers only ever see the towns the merchant has switched on.
+    return NextResponse.json({ ...settings, locations: activeLocations(settings) }, {
       headers: { 'Cache-Control': 'no-store' }
     });
   } catch (error) {

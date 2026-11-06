@@ -1,52 +1,60 @@
 import type { Metadata, Viewport } from 'next';
-import { Archivo_Black, Barlow_Condensed, DM_Sans, IBM_Plex_Mono } from 'next/font/google';
+import { Archivo, Geist, Geist_Mono } from 'next/font/google';
 import { Footer } from '@/components/layout/Footer';
 import { Navbar } from '@/components/layout/Navbar';
+import { StoreHydration } from '@/components/layout/StoreHydration';
 import { CartDrawer } from '@/components/cart/CartDrawer';
+import { THEME_BOOT_SCRIPT } from '@/components/theme/theme';
 import { buildMetadata } from '@/lib/metadata';
 import './globals.css';
 
-const archivo = Archivo_Black({
+/** Headlines: a wide, heavy grotesk that carries the streetwear voice. */
+const archivo = Archivo({
   display: 'swap',
   subsets: ['latin'],
   variable: '--font-archivo',
-  weight: '400'
+  axes: ['wdth']
 });
 
-const barlow = Barlow_Condensed({
+/** Everything people read and tap: clear at small sizes, friendly at large ones. */
+const geist = Geist({
   display: 'swap',
   subsets: ['latin'],
-  variable: '--font-barlow',
-  weight: ['600', '700']
+  variable: '--font-geist'
 });
 
-const dmSans = DM_Sans({
+const geistMono = Geist_Mono({
   display: 'swap',
   subsets: ['latin'],
-  variable: '--font-dm-sans',
-  weight: ['300', '400', '500', '700']
-});
-
-const plexMono = IBM_Plex_Mono({
-  display: 'swap',
-  subsets: ['latin'],
-  variable: '--font-plex-mono',
-  weight: ['400', '500', '700']
+  variable: '--font-geist-mono',
+  weight: ['400', '500', '600']
 });
 
 export const metadata: Metadata = buildMetadata();
-export const viewport: Viewport = { themeColor: '#080808' };
+export const viewport: Viewport = {
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#f6f5f1' },
+    { media: '(prefers-color-scheme: dark)', color: '#0b0b0c' }
+  ]
+};
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html
-      className={`${archivo.variable} ${barlow.variable} ${dmSans.variable} ${plexMono.variable}`}
+      className={`${archivo.variable} ${geist.variable} ${geistMono.variable}`}
+      data-theme="dark"
       lang="en"
+      suppressHydrationWarning
     >
+      <head>
+        {/* Applies the saved or device theme before the first paint — no flash. */}
+        <script dangerouslySetInnerHTML={{ __html: THEME_BOOT_SCRIPT }} />
+      </head>
       <body>
         <a className="skipLink" href="#main">
           Skip to main content
         </a>
+        <StoreHydration />
         <Navbar />
         <main id="main">{children}</main>
         <Footer />

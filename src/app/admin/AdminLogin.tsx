@@ -38,7 +38,7 @@ export function AdminLogin() {
   };
 
   return (
-    <div className={styles.page}>
+    <div className={styles.page} data-admin="" data-theme="dark">
       <section className={styles.card} aria-labelledby="admin-login-title">
         <div className={styles.brand}>
           <Image alt="REDOXDESIGNX" className={styles.logo} height={52} src="/icon1?brand=2" unoptimized width={52} />

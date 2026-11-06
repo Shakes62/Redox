@@ -1,28 +1,28 @@
 import Link from 'next/link';
 import type { ReactNode } from 'react';
-import styles from './Button.module.css';
+import { buttonClasses, type ButtonSize, type ButtonVariant } from './Button';
 
 interface LinkButtonProps {
   children: ReactNode;
   href: string;
-  variant?: 'primary' | 'secondary' | 'dark' | 'ghost';
+  variant?: ButtonVariant;
+  size?: ButtonSize;
   fullWidth?: boolean;
   className?: string;
+  onClick?: () => void;
 }
 
 export function LinkButton({
   children,
   href,
   variant = 'primary',
+  size = 'md',
   fullWidth = false,
-  className
+  className,
+  onClick
 }: LinkButtonProps) {
-  const classes = [styles.button, styles[variant], fullWidth ? styles.fullWidth : '', className || '']
-    .filter(Boolean)
-    .join(' ');
-
   return (
-    <Link className={classes} href={href}>
+    <Link className={buttonClasses(variant, size, fullWidth, className)} href={href} onClick={onClick}>
       {children}
     </Link>
   );

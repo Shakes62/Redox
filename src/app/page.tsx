@@ -8,7 +8,7 @@ export default async function HomePage() {
   const products = await getVisibleDbProducts();
 
   return (
-    <main className={styles.homePage}>
+    <div className={styles.homePage}>
       <section className={styles.catalogSection} id="latest-products">
         {products.length > 0 ? (
           <div className={styles.landingGrid}>
@@ -17,16 +17,12 @@ export default async function HomePage() {
             ))}
           </div>
         ) : (
-          <div style={{ textAlign: 'center', padding: '120px 24px' }}>
-            <h2 style={{ fontSize: '1.2rem', letterSpacing: '0.1em', color: '#fff', textTransform: 'uppercase', marginBottom: '8px' }}>
-              Catalog
-            </h2>
-            <p style={{ color: '#666', fontSize: '0.825rem', fontStyle: 'italic' }}>
-              Add products in the admin panel to show them here.
-            </p>
+          <div className={styles.emptyState}>
+            <h2>Catalog</h2>
+            <p>Add products in the admin panel to show them here.</p>
           </div>
         )}
       </section>
-    </main>
+    </div>
   );
 }

@@ -32,17 +32,64 @@ export interface CartItem {
   wholesale?: WholesaleRule | null;
 }
 
+/** Which screen the drawer shows when it opens. */
+export type DrawerView = 'bag' | 'checkout';
+
 interface CartStore {
   items: CartItem[];
   isOpen: boolean;
   hydrated: boolean;
+  view: DrawerView;
+  /**
+   * Pieces bought straight from a product page with "Buy now". They skip the
+   * bag entirely, so whatever else the customer has saved there is untouched.
+   */
+  buyNowItems: CartItem[] | null;
+  /** Bumped when a Buy-now order completes, so the product page can reset. */
+  buyNowCompletedAt: number;
   addItem: (product: Product, variant: Variant, quantity?: number, selectedColorImage?: string) => void;
+  /** Adds several lines and opens the bag once. */
+  addItems: (lines: CartItem[]) => void;
   removeItem: (variantId: string) => void;
   updateQty: (variantId: string, quantity: number) => void;
   clearCart: () => void;
   openCart: () => void;
+  openCheckout: () => void;
+  buyNow: (lines: CartItem[]) => void;
+  completeBuyNow: () => void;
+  setView: (view: DrawerView) => void;
   closeCart: () => void;
   setHydrated: (hydrated: boolean) => void;
+}
+
+/** The one place a product + variant becomes a bag line. */
+export function toCartItem(product: Product, variant: Variant, quantity = 1, selectedColorImage?: string): CartItem {
+  const stockLimit = getVariantStockLimit(variant);
+  return {
+    productId: product.id,
+    productSlug: product.slug,
+    name: product.name,
+    image: selectedColorImage || product.image,
+    price: product.price,
+    variantId: `${variant.id}-${variant.color}`,
+    size: variant.size,
+    color: variant.color,
+    sku: variant.sku,
+    quantity: clamp(quantity, 1, stockLimit),
+    stockLimit,
+    wholesale: product.wholesale ?? null
+  };
+}
+
+function mergeInto(items: CartItem[], line: CartItem): CartItem[] {
+  const existing = items.find((item) => item.variantId === line.variantId);
+  if (!existing) return [...items, line];
+  const limit = line.stockLimit || existing.stockLimit || UNTRACKED_STOCK_LIMIT;
+  return items.map((item) =>
+    item.variantId === line.variantId
+      ? { ...item, ...line, quantity: clamp(item.quantity + line.quantity, 1, limit) }
+      : item
+  );
 }
 
 export const useCartStore = create<CartStore>()(
@@ -51,44 +98,23 @@ export const useCartStore = create<CartStore>()(
       items: [],
       isOpen: false,
       hydrated: false,
+      view: 'bag',
+      buyNowItems: null,
+      buyNowCompletedAt: 0,
       addItem: (product, variant, quantity = 1, selectedColorImage) =>
-        set((state) => {
-          const compositeId = `${variant.id}-${variant.color}`;
-          const stockLimit = getVariantStockLimit(variant);
-          const existing = state.items.find((item) => item.variantId === compositeId);
-
-          if (existing) {
-            return {
-              isOpen: true,
-              items: state.items.map((item) =>
-                item.variantId === compositeId
-                  ? { ...item, stockLimit, quantity: clamp(item.quantity + quantity, 1, stockLimit) }
-                  : item
-              )
-            };
-          }
-
-          return {
-            isOpen: true,
-            items: [
-              ...state.items,
-              {
-                productId: product.id,
-                productSlug: product.slug,
-                name: product.name,
-                image: selectedColorImage || product.image,
-                price: product.price,
-                variantId: compositeId,
-                size: variant.size,
-                color: variant.color,
-                sku: variant.sku,
-                quantity: clamp(quantity, 1, stockLimit),
-                stockLimit,
-                wholesale: product.wholesale ?? null
-              }
-            ]
-          };
-        }),
+        set((state) => ({
+          isOpen: true,
+          view: 'bag',
+          buyNowItems: null,
+          items: mergeInto(state.items, toCartItem(product, variant, quantity, selectedColorImage))
+        })),
+      addItems: (lines) =>
+        set((state) => ({
+          isOpen: true,
+          view: 'bag',
+          buyNowItems: null,
+          items: lines.reduce(mergeInto, state.items)
+        })),
       removeItem: (variantId) =>
         set((state) => ({ items: state.items.filter((item) => item.variantId !== variantId) })),
       updateQty: (variantId, quantity) =>
@@ -100,7 +126,11 @@ export const useCartStore = create<CartStore>()(
           )
         })),
       clearCart: () => set({ items: [] }),
-      openCart: () => set({ isOpen: true }),
+      openCart: () => set({ isOpen: true, view: 'bag', buyNowItems: null }),
+      openCheckout: () => set({ isOpen: true, view: 'checkout', buyNowItems: null }),
+      buyNow: (lines) => set({ isOpen: true, view: 'checkout', buyNowItems: lines }),
+      completeBuyNow: () => set({ buyNowCompletedAt: Date.now() }),
+      setView: (view) => set({ view }),
       closeCart: () => set({ isOpen: false }),
       setHydrated: (hydrated) => set({ hydrated })
     }),
@@ -108,6 +138,9 @@ export const useCartStore = create<CartStore>()(
       name: 'redox-cart',
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({ items: state.items }),
+      // Loaded after the first render (see StoreHydration) so the server HTML
+      // and the browser's first paint always agree.
+      skipHydration: true,
       onRehydrateStorage: () => (state) => {
         state?.setHydrated(true);
       }

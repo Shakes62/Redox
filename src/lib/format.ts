@@ -20,7 +20,7 @@ export function calcServiceCharge(subtotal: number): number {
 
 /** Calculate the final order total (subtotal + service charge). */
 export function calcOrderTotal(subtotal: number): number {
-  return subtotal + calcServiceCharge(subtotal);
+  return Math.round((subtotal + calcServiceCharge(subtotal)) * 100) / 100;
 }
 
 export function clamp(value: number, min: number, max: number) {

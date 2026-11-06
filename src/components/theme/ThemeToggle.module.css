@@ -1,0 +1,46 @@
+.toggle {
+  position: relative;
+  display: inline-grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  overflow: hidden;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--fg-2);
+  transition: background var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out);
+}
+
+.toggle:hover {
+  background: var(--surface-2);
+  color: var(--fg);
+}
+
+.toggle:active {
+  transform: scale(0.94);
+}
+
+.sun,
+.moon {
+  grid-area: 1 / 1;
+  transition:
+    transform var(--duration-normal) var(--ease-spring),
+    opacity var(--duration-fast) var(--ease-out);
+}
+
+/* Shows what you will switch to: the sun in dark mode, the moon in light. */
+.moon {
+  opacity: 0;
+  transform: translateY(14px) rotate(-40deg) scale(0.6);
+}
+
+:global([data-theme='light']) .sun {
+  opacity: 0;
+  transform: translateY(-14px) rotate(60deg) scale(0.6);
+}
+
+:global([data-theme='light']) .moon {
+  opacity: 1;
+  transform: none;
+}

@@ -1,0 +1,87 @@
+.card {
+  --tone: var(--fg-3);
+  --tone-soft: var(--surface-2);
+  width: min(100% - 32px, 620px);
+  margin: calc(var(--nav-height) + 56px) auto 80px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  background: var(--surface);
+  box-shadow: var(--shadow-md);
+  padding: clamp(24px, 5vw, 40px);
+  animation: fadeUp var(--duration-normal) var(--ease-out);
+}
+
+.card[data-phase='paid'] { --tone: var(--success); --tone-soft: var(--success-soft); }
+.card[data-phase='failed'] { --tone: var(--danger); --tone-soft: var(--danger-soft); }
+.card[data-phase='unsettled'],
+.card[data-phase='missing'] { --tone: var(--warning); --tone-soft: var(--warning-soft); }
+
+.head { display: grid; justify-items: center; text-align: center; }
+
+.icon {
+  display: grid;
+  width: 64px;
+  height: 64px;
+  margin-bottom: var(--space-4);
+  place-items: center;
+  border-radius: var(--radius-full);
+  background: var(--tone-soft);
+  box-shadow: 0 0 0 8px var(--tone-soft);
+  color: var(--tone);
+  font-size: 1.6rem;
+  font-weight: 700;
+  animation: popIn 520ms var(--ease-spring);
+}
+
+.spinner {
+  width: 26px;
+  height: 26px;
+  border: 3px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: spin 800ms linear infinite;
+}
+
+.title {
+  margin: 0 0 10px;
+  font-family: var(--font-display);
+  font-variation-settings: var(--display-width);
+  font-size: clamp(1.4rem, 4vw, 1.8rem);
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.message { max-width: 440px; margin: 0; color: var(--fg-2); line-height: 1.6; }
+
+.details {
+  display: grid;
+  gap: 14px;
+  margin-top: var(--space-5);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--bg);
+  padding: var(--space-4);
+  font-size: 0.92rem;
+}
+
+.label {
+  display: block;
+  margin-bottom: 2px;
+  color: var(--fg-3);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.items { display: grid; gap: 8px; margin-top: 4px; }
+.itemMeta { color: var(--fg-2); font-size: 0.85rem; }
+.reference { margin: var(--space-4) 0 0; color: var(--fg-3); font-size: 0.8rem; text-align: center; overflow-wrap: anywhere; }
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: var(--space-5);
+}

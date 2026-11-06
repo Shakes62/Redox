@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { rateLimit, requestKey } from '@/lib/rate-limit';
 import { createDbOrderWithStock, findDbOrderByClientRequestId, rebrandDbOrderReference } from '@/lib/catalog-db';
 import { isDbConfigured } from '@/lib/db';
-import { deliveryQuote } from '@/lib/delivery';
+import { quoteCheckoutDelivery } from '@/lib/delivery';
 import { getDeliverySettings } from '@/lib/delivery-settings-db';
 import { priceOrderDraft } from '@/lib/order-pricing';
 import { checkoutInitSchema, toRequestedLines } from '@/lib/order-schema';
@@ -104,7 +104,11 @@ export async function POST(request: Request) {
     }
 
     const draft = pricing.draft;
-    const delivery = deliveryQuote(input.shippingCity, input.deliveryMethod, await getDeliverySettings());
+    const delivery = quoteCheckoutDelivery({
+      locationId: input.deliveryLocationId,
+      region: input.shippingCity,
+      requested: input.deliveryMethod
+    }, await getDeliverySettings());
     if (delivery.error) return NextResponse.json({ error: delivery.error }, { status: 400 });
     if (input.expectedDeliveryFee !== undefined && Math.abs(input.expectedDeliveryFee - delivery.fee) > 0.001) {
       return NextResponse.json({ error: 'Delivery options changed. Refresh the page to see the current price before paying.' }, { status: 409 });
@@ -134,7 +138,7 @@ export async function POST(request: Request) {
         customerPhone: input.customerPhone,
         customerEmail: input.customerEmail,
         shippingAddress: input.shippingAddress,
-        shippingCity: input.shippingCity,
+        shippingCity: delivery.shippingCity,
         paymentMethod: 'PAYSTACK',
         momoNumber: provisionalReference,
         paymentReference: provisionalReference,

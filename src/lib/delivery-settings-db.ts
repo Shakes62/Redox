@@ -5,13 +5,21 @@ let schemaPromise: Promise<void> | null = null;
 
 async function ensureDeliverySettingsTable() {
   if (!schemaPromise) {
-    schemaPromise = sql`
-      CREATE TABLE IF NOT EXISTS delivery_settings (
-        id INTEGER PRIMARY KEY CHECK (id = 1),
-        eligible_regions JSONB NOT NULL,
-        urgent_fee NUMERIC(10, 2) NOT NULL DEFAULT 0
-      )
-    `.then(() => undefined).catch((error: unknown) => {
+    schemaPromise = (async () => {
+      await sql`
+        CREATE TABLE IF NOT EXISTS delivery_settings (
+          id INTEGER PRIMARY KEY CHECK (id = 1),
+          eligible_regions JSONB NOT NULL,
+          urgent_fee NUMERIC(10, 2) NOT NULL DEFAULT 0
+        )
+      `;
+      // Added with delivery locations. Additive only: existing settings keep working.
+      await sql`
+        ALTER TABLE delivery_settings
+          ADD COLUMN IF NOT EXISTS locations JSONB NOT NULL DEFAULT '[]'::jsonb,
+          ADD COLUMN IF NOT EXISTS allow_unlisted BOOLEAN NOT NULL DEFAULT TRUE
+      `;
+    })().catch((error: unknown) => {
       schemaPromise = null;
       throw error;
     });
@@ -19,15 +27,29 @@ async function ensureDeliverySettingsTable() {
   await schemaPromise;
 }
 
+function parseJson(value: unknown): unknown {
+  if (typeof value !== 'string') return value;
+  try {
+    return JSON.parse(value);
+  } catch {
+    return undefined;
+  }
+}
+
 export async function getDeliverySettings(): Promise<DeliverySettings> {
   if (!isDbConfigured) return DEFAULT_DELIVERY_SETTINGS;
   await ensureDeliverySettingsTable();
-  const rows = await sql`SELECT eligible_regions, urgent_fee FROM delivery_settings WHERE id = 1`;
+  const rows = await sql`
+    SELECT eligible_regions, urgent_fee, locations, allow_unlisted
+    FROM delivery_settings WHERE id = 1
+  `;
   if (!rows[0]) return DEFAULT_DELIVERY_SETTINGS;
-  const regions = typeof rows[0].eligible_regions === 'string'
-    ? JSON.parse(rows[0].eligible_regions)
-    : rows[0].eligible_regions;
-  return normalizeDeliverySettings({ eligibleRegions: regions, urgentFee: rows[0].urgent_fee });
+  return normalizeDeliverySettings({
+    eligibleRegions: parseJson(rows[0].eligible_regions),
+    urgentFee: rows[0].urgent_fee,
+    locations: parseJson(rows[0].locations),
+    allowUnlisted: rows[0].allow_unlisted
+  });
 }
 
 export async function saveDeliverySettings(settings: DeliverySettings): Promise<DeliverySettings> {
@@ -35,11 +57,16 @@ export async function saveDeliverySettings(settings: DeliverySettings): Promise<
   await ensureDeliverySettingsTable();
   const clean = normalizeDeliverySettings(settings);
   await sql`
-    INSERT INTO delivery_settings (id, eligible_regions, urgent_fee)
-    VALUES (1, ${JSON.stringify(clean.eligibleRegions)}::jsonb, ${clean.urgentFee})
+    INSERT INTO delivery_settings (id, eligible_regions, urgent_fee, locations, allow_unlisted)
+    VALUES (
+      1, ${JSON.stringify(clean.eligibleRegions)}::jsonb, ${clean.urgentFee},
+      ${JSON.stringify(clean.locations)}::jsonb, ${clean.allowUnlisted}
+    )
     ON CONFLICT (id) DO UPDATE SET
       eligible_regions = EXCLUDED.eligible_regions,
-      urgent_fee = EXCLUDED.urgent_fee
+      urgent_fee = EXCLUDED.urgent_fee,
+      locations = EXCLUDED.locations,
+      allow_unlisted = EXCLUDED.allow_unlisted
   `;
   return clean;
 }

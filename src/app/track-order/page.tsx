@@ -9,8 +9,8 @@ export const metadata = buildMetadata({
 
 export default function TrackOrderPage() {
   return (
-    <main style={{ minHeight: '70vh', padding: 'clamp(120px, 14vw, 180px) var(--section-x) 80px' }}>
+    <div style={{ minHeight: '70vh', padding: 'calc(var(--nav-height) + clamp(40px, 8vw, 96px)) var(--section-x) 80px' }}>
       <TrackOrder />
-    </main>
+    </div>
   );
 }

@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { rateLimit, requestKey } from '@/lib/rate-limit';
 import { createDbOrderWithStock, findDbOrderByPaymentRef, type NewOrderInput } from '@/lib/catalog-db';
 import { isDbConfigured } from '@/lib/db';
-import { deliveryQuote } from '@/lib/delivery';
+import { quoteCheckoutDelivery } from '@/lib/delivery';
 import { getDeliverySettings } from '@/lib/delivery-settings-db';
 import { priceOrderDraft } from '@/lib/order-pricing';
 import { directOrderSchema, toRequestedLines } from '@/lib/order-schema';
@@ -76,7 +76,11 @@ export async function POST(request: Request) {
     }
 
     const draft = pricing.draft;
-    const delivery = deliveryQuote(orderData.shippingCity, orderData.deliveryMethod, await getDeliverySettings());
+    const delivery = quoteCheckoutDelivery({
+      locationId: orderData.deliveryLocationId,
+      region: orderData.shippingCity,
+      requested: orderData.deliveryMethod
+    }, await getDeliverySettings());
     if (delivery.error) return NextResponse.json({ error: delivery.error }, { status: 400 });
     const grandTotal = Math.round((draft.grandTotal + delivery.fee) * 100) / 100;
 
@@ -138,7 +142,7 @@ export async function POST(request: Request) {
         customerPhone: orderData.customerPhone,
         customerEmail: orderData.customerEmail,
         shippingAddress: orderData.shippingAddress,
-        shippingCity: orderData.shippingCity,
+        shippingCity: delivery.shippingCity,
         paymentMethod: orderData.paymentMethod,
         momoNetwork: orderData.paymentMethod === 'MOMO' ? orderData.momoNetwork : undefined,
         momoNumber: paymentReference,

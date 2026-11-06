@@ -6,7 +6,7 @@ import type { Product, Drop, Collection, LookbookIssue, Order } from '@/types/pr
 import type { OrderPaymentSummary } from '@/lib/order-receipt';
 import type { WaitlistSignup } from '@/lib/catalog-db';
 import { formatCurrency } from '@/lib/format';
-import { FREE_STATION_DELIVERY_LABEL, URGENT_STATION_DELIVERY_LABEL } from '@/lib/delivery';
+import { describeDelivery, FREE_STATION_DELIVERY_LABEL, URGENT_STATION_DELIVERY_LABEL } from '@/lib/delivery';
 import { getProductStockSummary } from '@/lib/inventory';
 import { sumOrderExtras } from '@/lib/order-schema';
 import { formatAdminDateTime, revenueForRange, type RevenueRange } from '@/lib/admin-metrics';
@@ -250,7 +250,7 @@ function buildOrderSlipHtml(order: Order, origin: string): string {
         <div class="l">Phone</div>
         <div class="d">${escapeHtml(order.customerPhone)}</div>
       </div>
-      ${order.deliveryMethod && order.deliveryMethod !== 'none' ? `<div class="field"><div class="l">Delivery</div><div class="d">${order.deliveryMethod === 'urgent' ? URGENT_STATION_DELIVERY_LABEL : `${FREE_STATION_DELIVERY_LABEL} (Mon/Wed/Fri)`}</div></div>` : ''}
+      ${order.deliveryMethod && order.deliveryMethod !== 'none' ? `<div class="field"><div class="l">Delivery</div><div class="d">${order.deliveryMethod === 'urgent' ? URGENT_STATION_DELIVERY_LABEL : order.deliveryMethod === 'location' ? `${describeDelivery('location', order.deliveryFee || 0).label}${order.deliveryFee ? ` GH₵${Number(order.deliveryFee).toFixed(2)}` : ''}` : `${FREE_STATION_DELIVERY_LABEL} (Mon/Wed/Fri)`}</div></div>` : ''}
       <div class="field">
         <div class="l">Email</div>
         <div class="d">${escapeHtml(order.customerEmail)}</div>
@@ -2013,7 +2013,7 @@ export function AdminDashboard({
                       <td data-label="Ship to" style={{ padding: 'var(--space-3)' }}>
                         <div style={{ color: '#f5f3ee' }}>{o.shippingAddress || 'No address'}</div>
                         <div style={{ color: '#888', fontSize: '0.75rem' }}>{o.shippingCity || 'No region'}</div>
-                        {o.deliveryMethod && o.deliveryMethod !== 'none' && <div style={{ color: o.deliveryMethod === 'urgent' ? '#f5b459' : '#aaa', fontSize: '0.72rem', marginTop: '4px' }}>{o.deliveryMethod === 'urgent' ? `${URGENT_STATION_DELIVERY_LABEL} · +${formatCurrency(o.deliveryFee || 0)}` : `${FREE_STATION_DELIVERY_LABEL} · Monday, Wednesday and Friday`}</div>}
+                        {o.deliveryMethod && o.deliveryMethod !== 'none' && <div style={{ color: o.deliveryMethod === 'urgent' ? '#f5b459' : '#aaa', fontSize: '0.72rem', marginTop: '4px' }}>{o.deliveryMethod === 'urgent' ? `${URGENT_STATION_DELIVERY_LABEL} · +${formatCurrency(o.deliveryFee || 0)}` : o.deliveryMethod === 'location' ? `${describeDelivery('location', o.deliveryFee || 0).label}${o.deliveryFee ? ` · ${formatCurrency(o.deliveryFee)}` : ''}` : `${FREE_STATION_DELIVERY_LABEL} · Monday, Wednesday and Friday`}</div>}
                       </td>
                       <td data-label="Payment" style={{ padding: 'var(--space-3)', verticalAlign: 'top' }}>
                         {(() => {

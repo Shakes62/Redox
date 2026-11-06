@@ -15,6 +15,7 @@ import {
 } from '@/lib/inventory';
 import { SERVICE_CHARGE_RATE } from '@/lib/format';
 import { normalizeWholesaleRule } from '@/lib/wholesale';
+import { normalizeDeliveryMethod } from '@/lib/delivery';
 import type {
   Product,
   Drop,
@@ -1320,7 +1321,7 @@ function mapOrderRow(row: any): Order {
     totalQuantity,
     subtotal,
     serviceCharge,
-    deliveryMethod: row.delivery_method === 'urgent' || row.delivery_method === 'standard' ? row.delivery_method : 'none',
+    deliveryMethod: normalizeDeliveryMethod(row.delivery_method),
     deliveryFee: Number(row.delivery_fee) || 0,
     extras: parseOrderExtras(row.extras),
     discount: row.discount != null ? Number(row.discount) : 0,

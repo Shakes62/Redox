@@ -27,9 +27,9 @@ const nextConfig = {
     const csp = [
       "default-src 'self'",
       "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://js.paystack.co",
-      "style-src 'self' 'unsafe-inline' https://paystack.com https://fonts.cdnfonts.com",
+      "style-src 'self' 'unsafe-inline' https://paystack.com",
       "img-src 'self' data: blob: https://images.unsplash.com https://res.cloudinary.com",
-      "font-src 'self' data: https://fonts.cdnfonts.com",
+      "font-src 'self' data:",
       // The SMS gateway is deliberately absent: connect-src governs browser fetches,
       // and reaching Hubtel from the client would mean shipping it our credentials.
       "connect-src 'self' https://api.cloudinary.com https://api.paystack.co https://checkout.paystack.com",

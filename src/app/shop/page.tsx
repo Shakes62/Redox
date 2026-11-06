@@ -15,7 +15,7 @@ export default async function ShopPage() {
   const products = await getVisibleDbProducts();
 
   return (
-    <main className={styles.homePage}>
+    <div className={styles.homePage}>
       <section className={styles.catalogSection}>
         {products.length > 0 ? (
           <div className={styles.landingGrid}>
@@ -24,11 +24,11 @@ export default async function ShopPage() {
             ))}
           </div>
         ) : (
-          <div style={{ textAlign: 'center', padding: '120px 24px' }}>
-            <p style={{ color: '#666', fontSize: '0.825rem' }}>No products available yet.</p>
+          <div className={styles.emptyState}>
+            <p>No products available yet.</p>
           </div>
         )}
       </section>
-    </main>
+    </div>
   );
 }

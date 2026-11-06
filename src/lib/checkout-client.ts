@@ -23,6 +23,8 @@ export interface CheckoutCustomer {
   address: string;
   city: string;
   deliveryMethod?: 'standard' | 'urgent';
+  /** A town from the merchant's list; the server prices it. */
+  deliveryLocationId?: string;
   expectedDeliveryFee?: number;
 }
 
@@ -57,6 +59,8 @@ export interface PendingCheckout {
   orderId: number;
   orderNumber: string;
   savedAt: number;
+  /** False for a Buy-now order, which must not empty the customer's bag. */
+  fromCart?: boolean;
 }
 
 export interface ConfirmResult {
@@ -75,13 +79,14 @@ export interface ConfirmResult {
  * Remembers the in-flight reference so a reload, a crash or a closed tab can
  * pick the receipt back up instead of leaving the customer wondering.
  */
-export function rememberPendingCheckout(session: CheckoutSession): void {
+export function rememberPendingCheckout(session: CheckoutSession, fromCart = true): void {
   try {
     const pending: PendingCheckout = {
       reference: session.reference,
       orderId: session.orderId,
       orderNumber: session.orderNumber,
-      savedAt: Date.now()
+      savedAt: Date.now(),
+      fromCart
     };
     localStorage.setItem(PENDING_KEY, JSON.stringify(pending));
   } catch {
@@ -167,6 +172,7 @@ export async function startCheckout(
       shippingAddress: customer.address,
       shippingCity: customer.city,
       deliveryMethod: customer.deliveryMethod,
+      deliveryLocationId: customer.deliveryLocationId,
       expectedDeliveryFee: customer.expectedDeliveryFee,
       items: lines,
       clientRequestId
@@ -305,9 +311,10 @@ export interface RunCheckoutHandlers {
 export async function runPaystackCheckout(
   session: CheckoutSession,
   customer: CheckoutCustomer,
-  handlers: RunCheckoutHandlers
+  handlers: RunCheckoutHandlers,
+  options: { fromCart?: boolean } = {}
 ): Promise<void> {
-  rememberPendingCheckout(session);
+  rememberPendingCheckout(session, options.fromCart !== false);
 
   const paystack = await loadPaystackScript();
 

@@ -1,39 +1,42 @@
 .footerButton {
+  min-height: 36px;
   padding: 0;
   border: 0;
   background: none;
-  color: var(--color-text-secondary);
+  color: var(--fg-2);
   cursor: pointer;
   font: inherit;
-  text-transform: uppercase;
   white-space: nowrap;
+  transition: color var(--duration-fast) var(--ease-out);
 }
 
 .footerButton:hover,
-.footerButton:focus-visible { color: var(--color-white); }
+.footerButton:focus-visible { color: var(--fg); }
 
 .dialog {
   width: min(420px, calc(100% - 32px));
   max-height: min(80dvh, 600px);
   margin: auto;
   padding: 26px;
-  border: 1px solid #3a3a3a;
-  border-radius: 10px;
-  background: #101010;
-  color: #f4f4f4;
-  box-shadow: 0 24px 80px #000b;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  color: var(--fg);
+  box-shadow: var(--shadow-lg);
 }
 
-.dialog::backdrop { background: #000b; }
+.dialog[open] { animation: fadeUp var(--duration-normal) var(--ease-out); }
+.dialog::backdrop { background: var(--overlay); backdrop-filter: blur(4px); }
 .heading { display: flex; align-items: flex-start; justify-content: space-between; }
-.mark { display: block; width: 48px; height: 48px; object-fit: contain; }
-.close { width: 38px; height: 38px; border: 0; background: transparent; color: #ddd; cursor: pointer; font-size: 28px; line-height: 1; }
-.dialog h2 { margin: 18px 0 8px; font-size: 1.35rem; line-height: 1.2; text-transform: uppercase; }
-.dialog p { margin: 10px 0; color: #ccc; font-size: 0.9rem; line-height: 1.55; }
-.dialog ol { margin: 16px 0; padding-left: 22px; color: #ddd; font-size: 0.9rem; line-height: 1.55; }
+.mark { display: block; width: 48px; height: 48px; border-radius: 50%; object-fit: contain; }
+.close { width: 40px; height: 40px; border: 0; border-radius: var(--radius-full); background: transparent; color: var(--fg-2); cursor: pointer; font-size: 28px; line-height: 1; }
+.close:hover { background: var(--surface-2); color: var(--fg); }
+.dialog h2 { margin: 18px 0 8px; font-family: var(--font-display); font-variation-settings: var(--display-width); font-size: 1.35rem; font-weight: 800; line-height: 1.15; text-transform: uppercase; }
+.dialog p { margin: 10px 0; color: var(--fg-2); font-size: 0.92rem; line-height: 1.55; }
+.dialog ol { margin: 16px 0; padding-left: 22px; color: var(--fg-2); font-size: 0.92rem; line-height: 1.55; }
 .dialog li + li { margin-top: 12px; }
-.dialog strong { color: #fff; }
-.dialog .note { color: #999; font-size: 0.78rem; }
-.installButton { width: 100%; min-height: 46px; margin: 16px 0 8px; padding: 10px; border: 0; border-radius: 4px; background: #d72638; color: #fff; cursor: pointer; font: inherit; font-weight: 700; }
+.dialog strong { color: var(--fg); }
+.dialog .note { color: var(--fg-3); font-size: 0.8rem; }
+.installButton { width: 100%; min-height: 50px; margin: 16px 0 8px; padding: 10px; border: 0; border-radius: var(--radius-md); background: var(--accent); color: var(--on-accent); cursor: pointer; font: inherit; font-weight: 650; }
+.installButton:hover:not(:disabled) { background: var(--accent-hover); }
 .installButton:disabled { opacity: 0.6; cursor: wait; }
-.dialog button:focus-visible, .footerButton:focus-visible { outline: 2px solid #f4f4f4; outline-offset: 4px; }

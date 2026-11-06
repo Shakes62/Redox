@@ -4,7 +4,7 @@ import { effectiveUnitPrice, quantityByProduct } from '../src/lib/wholesale.ts';
 import { adminOrderSchema, resolveDiscount, sumOrderExtras } from '../src/lib/order-schema.ts';
 import { adjudicatePayment, buildPaymentReference } from '../src/lib/paystack-server.ts';
 import { parsePublicOrderId } from '../src/lib/order-reference.ts';
-import { deliveryQuote, normalizeDeliverySettings } from '../src/lib/delivery.ts';
+import { activeLocations, deliveryQuote, normalizeDeliverySettings, quoteCheckoutDelivery } from '../src/lib/delivery.ts';
 
 test('delivery options apply only to selected regions and price urgent delivery', () => {
   const settings = normalizeDeliverySettings({ eligibleRegions: ['Ashanti', 'Greater Accra'], urgentFee: 25 });
@@ -14,6 +14,40 @@ test('delivery options apply only to selected regions and price urgent delivery'
   assert.equal(deliveryQuote('Greater Accra', 'urgent', settings).error, 'Urgent Delivery to Station is not available for this region.');
   assert.deepEqual(deliveryQuote('Western', 'standard', settings), { method: 'none', fee: 0 });
   assert.ok(deliveryQuote('Ashanti', 'urgent', { ...settings, urgentFee: 0 }).error);
+});
+
+test('listed delivery locations are priced by the merchant, not the browser', () => {
+  const settings = normalizeDeliverySettings({
+    eligibleRegions: ['Ashanti'],
+    urgentFee: 20,
+    allowUnlisted: true,
+    locations: [
+      { id: 'kumasi', name: '  Kumasi ', region: 'Ashanti', fee: 30.005, note: 'VIP station' },
+      { id: 'legon', name: 'East Legon', region: 'Greater Accra', fee: 25 },
+      { id: 'dup', name: 'kumasi', region: 'Ashanti', fee: 99 },
+      { id: 'off', name: 'Ho', region: 'Volta', fee: 15, active: false },
+      { id: 'bad', name: 'X', region: 'Nowhere', fee: -4 }
+    ]
+  });
+  assert.equal(settings.locations.length, 3, 'duplicates and invalid rows are dropped');
+  assert.equal(settings.locations[0].name, 'Kumasi');
+  assert.equal(settings.locations[0].fee, 30.01);
+
+  const kumasi = quoteCheckoutDelivery({ locationId: 'kumasi', region: 'ignored' }, settings);
+  assert.equal(kumasi.method, 'location');
+  assert.equal(kumasi.fee, 30.01);
+  assert.equal(kumasi.shippingCity, 'Kumasi, Ashanti');
+
+  assert.equal(quoteCheckoutDelivery({ locationId: 'kumasi', region: '', requested: 'urgent' }, settings).fee, 50.01);
+  assert.ok(quoteCheckoutDelivery({ locationId: 'legon', region: '', requested: 'urgent' }, settings).error, 'no urgent outside station regions');
+  assert.ok(quoteCheckoutDelivery({ locationId: 'off', region: 'Volta' }, settings).error, 'inactive towns cannot be bought');
+  assert.deepEqual(activeLocations(settings).map((l) => l.id), ['legon', 'kumasi']);
+
+  // Unlisted towns fall back to the regional rule, unless the merchant turned that off.
+  assert.deepEqual(quoteCheckoutDelivery({ region: 'Ashanti' }, settings), { method: 'standard', fee: 0, shippingCity: 'Ashanti' });
+  assert.ok(quoteCheckoutDelivery({ region: 'Ashanti' }, { ...settings, allowUnlisted: false }).error);
+  // With no locations at all, checkout behaves exactly as before.
+  assert.deepEqual(quoteCheckoutDelivery({ region: 'Western' }, { ...settings, locations: [], allowUnlisted: false }), { method: 'none', fee: 0, shippingCity: 'Western' });
 });
 
 test('bulk pricing combines sizes and colors of one product', () => {

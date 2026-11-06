@@ -1,5 +1,6 @@
 import crypto from 'crypto';
 import type { Order, OrderItem } from '@/types/product';
+import type { DeliveryMethod } from '@/lib/delivery';
 
 /**
  * Server-side Paystack gateway client.
@@ -334,7 +335,7 @@ export interface OrderMetadataInput {
   totalQuantity: number;
   subtotal: number;
   serviceCharge: number;
-  deliveryMethod?: 'none' | 'standard' | 'urgent';
+  deliveryMethod?: DeliveryMethod;
   deliveryFee?: number;
   grandTotal: number;
   siteUrl?: string;
@@ -376,8 +377,8 @@ export function buildOrderMetadata(input: OrderMetadataInput): Record<string, an
     { display_name: 'Total Quantity', variable_name: 'total_quantity', value: String(input.totalQuantity) },
     { display_name: 'Subtotal', variable_name: 'subtotal', value: ghs(input.subtotal) },
     { display_name: 'Service Fee (2%)', variable_name: 'service_charge', value: ghs(input.serviceCharge) },
-    { display_name: 'Delivery', variable_name: 'delivery_method', value: input.deliveryMethod === 'urgent' ? 'Urgent Delivery to Station' : input.deliveryMethod === 'standard' ? 'Free Delivery to Station (Mon/Wed/Fri)' : 'Local' },
-    { display_name: 'Urgent Station Delivery Fee', variable_name: 'delivery_fee', value: ghs(input.deliveryFee || 0) },
+    { display_name: 'Delivery', variable_name: 'delivery_method', value: input.deliveryMethod === 'urgent' ? 'Urgent Delivery to Station' : input.deliveryMethod === 'standard' ? 'Free Delivery to Station (Mon/Wed/Fri)' : input.deliveryMethod === 'location' ? `Delivery to ${clip(input.shippingCity, 120)}` : 'Local' },
+    { display_name: 'Delivery Fee', variable_name: 'delivery_fee', value: ghs(input.deliveryFee || 0) },
     { display_name: 'Order Total', variable_name: 'order_total', value: ghs(input.grandTotal) },
     { display_name: 'Track Order', variable_name: 'track_url', value: clip(trackUrl) }
   ];

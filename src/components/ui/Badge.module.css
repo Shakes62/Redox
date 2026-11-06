@@ -2,39 +2,40 @@
   display: inline-flex;
   min-height: 24px;
   align-items: center;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  padding: 3px 8px;
-  font-family: var(--font-mono), monospace;
-  font-size: 0.68rem;
+  border-radius: var(--radius-full);
+  padding: 4px 10px;
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
   line-height: 1;
   text-transform: uppercase;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .new {
-  background: var(--color-surface-3);
-  color: var(--color-white);
+  background: var(--inverse-bg);
+  color: var(--inverse-fg);
 }
 
 .sale {
-  border-color: var(--color-red);
-  background: var(--color-red);
-  color: var(--color-white);
+  background: var(--accent);
+  color: var(--on-accent);
 }
 
 .limited {
-  border-style: dashed;
-  background: var(--color-void);
-  color: var(--color-white);
+  background: rgba(12, 12, 12, 0.72);
+  color: #ffffff;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.35);
 }
 
 .soldOut {
-  background: rgba(92, 92, 92, 0.2);
-  color: var(--color-text-muted);
+  background: rgba(12, 12, 12, 0.72);
+  color: rgba(255, 255, 255, 0.85);
 }
 
 .comingSoon {
-  border-color: var(--color-steel);
-  background: var(--color-void);
-  color: var(--color-steel);
+  background: rgba(255, 255, 255, 0.9);
+  color: #121213;
 }

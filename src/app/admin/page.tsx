@@ -44,7 +44,8 @@ export default async function AdminPage() {
   const waitlist = await getDbWaitlist();
 
   return (
-    <main style={{ minHeight: '100vh', background: '#050505', paddingTop: 'var(--space-8)' }}>
+    // The console keeps its dark look whatever theme the visitor picked.
+    <div data-admin="" data-theme="dark" style={{ minHeight: '100vh', background: '#050505', color: 'var(--fg)', paddingTop: 'var(--space-8)' }}>
       <AdminDashboard
         isDbConnected={isDbConnected}
         isCloudinaryConnected={isCloudinaryConnected}
@@ -54,6 +55,6 @@ export default async function AdminPage() {
         initialLookbooks={lookbooks}
         initialWaitlist={waitlist}
       />
-    </main>
+    </div>
   );
 }

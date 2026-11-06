@@ -10,26 +10,30 @@
   display: block;
   overflow: hidden;
   aspect-ratio: 3 / 4;
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  background: var(--color-surface);
-  box-shadow: var(--shadow-card);
-  transition: border-color var(--duration-normal) var(--ease-out), box-shadow var(--duration-normal) var(--ease-out);
+  background: var(--surface-2);
+  box-shadow: var(--shadow-sm);
+  transition:
+    border-color var(--duration-normal) var(--ease-out),
+    box-shadow var(--duration-normal) var(--ease-out),
+    transform var(--duration-normal) var(--ease-out);
 }
 
 .media::after {
   position: absolute;
   inset: 45% 0 0;
   z-index: 1;
-  background: linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.58));
+  background: linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.5));
   content: '';
   pointer-events: none;
 }
 
 .card:hover .media,
 .media:focus-visible {
-  border-color: var(--color-border-light);
-  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.42);
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-3px);
 }
 
 .image {
@@ -68,13 +72,10 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  color: var(--color-white);
-  font-family: var(--font-mono), monospace;
-  font-size: var(--text-xs);
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  opacity: 0.85;
+  color: #ffffff;
+  font-size: 0.8rem;
+  font-weight: 600;
+  opacity: 0;
   transform: translateY(3px);
   transition: opacity var(--duration-fast) var(--ease-out), transform var(--duration-fast) var(--ease-out);
 }
@@ -113,10 +114,10 @@
   width: 42px;
   height: 42px;
   place-items: center;
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: var(--radius-full);
-  background: rgba(8, 8, 8, 0.54);
-  color: var(--color-white);
+  background: rgba(12, 12, 12, 0.5);
+  color: #ffffff;
   backdrop-filter: blur(14px);
   cursor: pointer;
   transition: color var(--duration-fast) var(--ease-out), background var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out), transform var(--duration-fast) var(--ease-out);
@@ -125,12 +126,17 @@
 .wishlist:hover,
 .wishlist:focus-visible {
   border-color: rgba(255, 255, 255, 0.5);
-  background: rgba(8, 8, 8, 0.82);
+  background: rgba(12, 12, 12, 0.78);
   transform: scale(1.06);
 }
 
 .wishlistActive {
-  color: var(--color-red);
+  color: #ff4d5e;
+}
+
+.wishlistActive svg {
+  fill: currentColor;
+  animation: popIn 360ms var(--ease-spring);
 }
 
 .meta {
@@ -153,28 +159,27 @@
 
 .details a:hover .name,
 .details a:focus-visible .name {
-  color: var(--color-white);
+  color: var(--fg);
   text-decoration: underline;
-  text-decoration-color: var(--color-red);
+  text-decoration-color: var(--accent);
   text-underline-offset: 3px;
 }
 
 .name {
   margin: 0;
-  color: var(--color-white);
-  font-family: var(--font-heading), sans-serif;
-  font-size: clamp(0.95rem, 1.7vw, 1.1rem);
-  font-weight: 700;
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: clamp(0.92rem, 1.5vw, 1rem);
+  font-weight: 600;
   line-height: 1.35;
-  letter-spacing: 0.01em;
   overflow-wrap: break-word;
 }
 
 .collection {
   margin: 0 0 5px;
-  color: var(--color-text-secondary);
-  font-family: var(--font-mono), monospace;
-  font-size: 0.64rem;
+  color: var(--fg-3);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
   text-transform: uppercase;
   letter-spacing: 0.06em;
 }
@@ -182,13 +187,11 @@
 .bulkHint {
   display: inline-flex;
   margin: 7px 0 0;
-  padding: 4px 7px;
-  border: 1px solid rgba(246, 198, 103, 0.35);
-  border-radius: var(--radius-sm);
-  background: rgba(246, 198, 103, 0.08);
-  color: #f6c667;
-  font-family: var(--font-mono), monospace;
-  font-size: 0.65rem;
+  padding: 4px 8px;
+  border-radius: var(--radius-full);
+  background: var(--warning-soft);
+  color: var(--warning);
+  font-size: 0.72rem;
   font-weight: 700;
   line-height: 1.25;
 }
@@ -203,25 +206,25 @@
 
 .price,
 .salePrice {
-  font-family: var(--font-mono), monospace;
-  font-size: var(--text-sm);
+  color: var(--fg);
+  font-size: 0.95rem;
   font-weight: 700;
+  font-variant-numeric: tabular-nums;
 }
 
 .salePrice {
-  color: var(--color-red);
+  color: var(--accent-text);
 }
 
 .comparePrice {
-  color: var(--color-text-muted);
-  font-family: var(--font-mono), monospace;
-  font-size: 0.65rem;
+  color: var(--fg-3);
+  font-size: 0.75rem;
   text-decoration: line-through;
 }
 
 .media:focus-visible,
 .wishlist:focus-visible {
-  outline: 2px solid var(--color-white);
+  outline: 2px solid var(--accent);
   outline-offset: 3px;
 }
 
@@ -250,5 +253,13 @@
   .mediaAction span,
   .wishlist {
     transition: none;
+  }
+}
+
+/* No hover on phones: keep the "View details" hint visible. */
+@media (hover: none) {
+  .mediaAction {
+    opacity: 0.92;
+    transform: none;
   }
 }
