@@ -36,6 +36,15 @@ export interface DeliveryLocation {
   note: string;
   /** Hidden from checkout without losing the price the merchant set. */
   active: boolean;
+  /** Shown first to customers, under "Popular". */
+  featured: boolean;
+  /** The town or city an area belongs to, e.g. "Kumasi" for Adum. */
+  area: string;
+  /** Map pin from OpenStreetMap. Lets customers find their closest place. */
+  lat?: number;
+  lon?: number;
+  /** OpenStreetMap object id the place was picked from, e.g. "N5531053289". */
+  osmId?: string;
 }
 
 export interface DeliverySettings {
@@ -48,13 +57,16 @@ export interface DeliverySettings {
    * the team), exactly as before locations existed.
    */
   allowUnlisted: boolean;
+  /** Offer customers "Find the closest place to me" using their phone's location. */
+  useLocation: boolean;
 }
 
 export const DEFAULT_DELIVERY_SETTINGS: DeliverySettings = {
   eligibleRegions: GHANA_REGIONS.filter((region) => region !== 'Greater Accra'),
   urgentFee: 0,
   locations: [],
-  allowUnlisted: true
+  allowUnlisted: true,
+  useLocation: true
 };
 
 const REGION_SET = new Set<string>(GHANA_REGIONS);
@@ -86,13 +98,23 @@ export function normalizeDeliveryLocation(value: unknown): DeliveryLocation | nu
     return null;
   }
   const rawId = typeof input.id === 'string' ? input.id.trim() : '';
+  const lat = Number(input.lat);
+  const lon = Number(input.lon);
+  const pinned = input.lat !== undefined && input.lat !== null && input.lon !== undefined && input.lon !== null &&
+    Number.isFinite(lat) && Number.isFinite(lon) && Math.abs(lat) <= 90 && Math.abs(lon) <= 180;
+  const osmId = typeof input.osmId === 'string' && /^[NWR]\d{1,15}$/.test(input.osmId) ? input.osmId : undefined;
+  const area = cleanText(input.area, 80);
   return {
     id: /^[a-z0-9][a-z0-9-]{0,59}$/i.test(rawId) ? rawId : makeLocationId(name, region),
     name,
     region: region as GhanaRegion,
     fee: roundMoney(fee),
     note: cleanText(input.note, 160),
-    active: input.active !== false
+    active: input.active !== false,
+    featured: input.featured === true,
+    area: area.toLowerCase() === name.toLowerCase() ? '' : area,
+    ...(pinned ? { lat: Math.round(lat * 1e6) / 1e6, lon: Math.round(lon * 1e6) / 1e6 } : {}),
+    ...(osmId ? { osmId } : {})
   };
 }
 
@@ -125,7 +147,8 @@ export function normalizeDeliverySettings(value: unknown): DeliverySettings {
     eligibleRegions,
     urgentFee: Number.isFinite(fee) && fee > 0 ? roundMoney(Math.min(fee, MAX_DELIVERY_FEE)) : 0,
     locations,
-    allowUnlisted: input.allowUnlisted !== false
+    allowUnlisted: input.allowUnlisted !== false,
+    useLocation: input.useLocation !== false
   };
 }
 
@@ -136,11 +159,13 @@ export function activeLocations(settings: DeliverySettings): DeliveryLocation[] 
     .sort((a, b) => a.name.localeCompare(b.name) || a.region.localeCompare(b.region));
 }
 
-/** "Kumasi, Ashanti" — or just "Ashanti" when the merchant named the region itself. */
-export function locationLabel(location: Pick<DeliveryLocation, 'name' | 'region'>): string {
-  return location.name.toLowerCase() === location.region.toLowerCase()
-    ? location.name
-    : `${location.name}, ${location.region}`;
+/** "Adum, Kumasi, Ashanti" — repeats dropped, so a region named as a place reads once. */
+export function locationLabel(location: Pick<DeliveryLocation, 'name' | 'region'> & { area?: string }): string {
+  const parts: string[] = [];
+  for (const part of [location.name, location.area, location.region]) {
+    if (part && !parts.some((existing) => existing.toLowerCase() === part.toLowerCase())) parts.push(part);
+  }
+  return parts.join(', ');
 }
 
 export function isStationRegion(region: string, settings: DeliverySettings): boolean {

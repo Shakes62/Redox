@@ -17,7 +17,8 @@ async function ensureDeliverySettingsTable() {
       await sql`
         ALTER TABLE delivery_settings
           ADD COLUMN IF NOT EXISTS locations JSONB NOT NULL DEFAULT '[]'::jsonb,
-          ADD COLUMN IF NOT EXISTS allow_unlisted BOOLEAN NOT NULL DEFAULT TRUE
+          ADD COLUMN IF NOT EXISTS allow_unlisted BOOLEAN NOT NULL DEFAULT TRUE,
+          ADD COLUMN IF NOT EXISTS use_location BOOLEAN NOT NULL DEFAULT TRUE
       `;
     })().catch((error: unknown) => {
       schemaPromise = null;
@@ -40,7 +41,7 @@ export async function getDeliverySettings(): Promise<DeliverySettings> {
   if (!isDbConfigured) return DEFAULT_DELIVERY_SETTINGS;
   await ensureDeliverySettingsTable();
   const rows = await sql`
-    SELECT eligible_regions, urgent_fee, locations, allow_unlisted
+    SELECT eligible_regions, urgent_fee, locations, allow_unlisted, use_location
     FROM delivery_settings WHERE id = 1
   `;
   if (!rows[0]) return DEFAULT_DELIVERY_SETTINGS;
@@ -48,7 +49,8 @@ export async function getDeliverySettings(): Promise<DeliverySettings> {
     eligibleRegions: parseJson(rows[0].eligible_regions),
     urgentFee: rows[0].urgent_fee,
     locations: parseJson(rows[0].locations),
-    allowUnlisted: rows[0].allow_unlisted
+    allowUnlisted: rows[0].allow_unlisted,
+    useLocation: rows[0].use_location
   });
 }
 
@@ -57,16 +59,17 @@ export async function saveDeliverySettings(settings: DeliverySettings): Promise<
   await ensureDeliverySettingsTable();
   const clean = normalizeDeliverySettings(settings);
   await sql`
-    INSERT INTO delivery_settings (id, eligible_regions, urgent_fee, locations, allow_unlisted)
+    INSERT INTO delivery_settings (id, eligible_regions, urgent_fee, locations, allow_unlisted, use_location)
     VALUES (
       1, ${JSON.stringify(clean.eligibleRegions)}::jsonb, ${clean.urgentFee},
-      ${JSON.stringify(clean.locations)}::jsonb, ${clean.allowUnlisted}
+      ${JSON.stringify(clean.locations)}::jsonb, ${clean.allowUnlisted}, ${clean.useLocation}
     )
     ON CONFLICT (id) DO UPDATE SET
       eligible_regions = EXCLUDED.eligible_regions,
       urgent_fee = EXCLUDED.urgent_fee,
       locations = EXCLUDED.locations,
-      allow_unlisted = EXCLUDED.allow_unlisted
+      allow_unlisted = EXCLUDED.allow_unlisted,
+      use_location = EXCLUDED.use_location
   `;
   return clean;
 }

@@ -1128,3 +1128,240 @@ select.input {
     gap: var(--space-3);
   }
 }
+
+/* ── Delivery place chooser ─────────────────────────────── */
+.chooser {
+  display: grid;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+  border-radius: var(--radius-md);
+  animation: fadeUp var(--duration-normal) var(--ease-out);
+}
+
+.chooser:focus {
+  outline: none;
+}
+
+.chooserLead {
+  margin: 0;
+  color: var(--fg-2);
+  font-size: 0.92rem;
+}
+
+.locateBlock {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.locateButton {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 14px;
+  border: 1.5px solid var(--accent);
+  border-radius: var(--radius-lg);
+  background: var(--accent-soft);
+  color: var(--fg);
+  padding: 14px 16px;
+  text-align: left;
+  transition: background-color var(--duration-fast) var(--ease-out), transform var(--duration-snap) var(--ease-out);
+}
+
+.locateButton:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+}
+
+.locateButton:active:not(:disabled) {
+  transform: scale(0.99);
+}
+
+.locateButton:disabled {
+  cursor: progress;
+}
+
+.locateIcon {
+  position: relative;
+  display: inline-grid;
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+  place-items: center;
+  border-radius: var(--radius-full);
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+.locatePulse::after {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: 0 0 0 0 var(--accent-ring);
+  content: '';
+  animation: locatePulse 1.2s var(--ease-out) infinite;
+}
+
+@keyframes locatePulse {
+  from { box-shadow: 0 0 0 0 var(--accent-ring); }
+  to { box-shadow: 0 0 0 14px transparent; }
+}
+
+.locateText {
+  display: grid;
+  gap: 2px;
+}
+
+.locateText strong {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.locateText small {
+  color: var(--fg-2);
+  font-size: 0.8rem;
+}
+
+.nearest {
+  display: grid;
+  gap: 6px;
+  animation: fadeUp var(--duration-normal) var(--ease-out);
+}
+
+.groupLabel {
+  display: block;
+  margin: 6px 2px 2px;
+  color: var(--fg-3);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.regionGroup {
+  display: grid;
+  gap: 6px;
+}
+
+.distance {
+  color: var(--accent-text);
+  font-weight: 650;
+}
+
+.chooserHint,
+.osmNote {
+  margin: 2px 2px 0;
+  color: var(--fg-2);
+  font-size: 0.8rem;
+}
+
+.osmNote {
+  color: var(--fg-3);
+  font-size: 0.72rem;
+}
+
+.orDivider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--fg-3);
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.orDivider::before,
+.orDivider::after {
+  height: 1px;
+  flex: 1;
+  background: var(--border);
+  content: '';
+}
+
+.chooserFoot {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.chooser .locationList {
+  max-height: min(360px, 46vh);
+}
+
+/* ── Chosen place ───────────────────────────────────────── */
+.chosenCard {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: var(--space-4);
+  border: 1.5px solid var(--accent);
+  border-radius: var(--radius-lg);
+  background: var(--accent-soft);
+  padding: 14px;
+  animation: fadeUp var(--duration-normal) var(--ease-out);
+}
+
+.chosenIcon {
+  display: inline-grid;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  border-radius: var(--radius-full);
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+.chosenText {
+  display: grid;
+  min-width: 0;
+}
+
+.chosenText small {
+  color: var(--fg-3);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.chosenText strong {
+  overflow: hidden;
+  font-size: 1.05rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chosenText span {
+  color: var(--fg-2);
+  font-size: 0.82rem;
+}
+
+.chosenSide {
+  display: grid;
+  justify-items: end;
+  gap: 4px;
+}
+
+.changeButton {
+  min-height: 32px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-full);
+  background: var(--surface);
+  color: var(--fg);
+  font-size: 0.8rem;
+  font-weight: 650;
+  padding: 0 12px;
+  transition: border-color var(--duration-fast) var(--ease-out);
+}
+
+.changeButton:hover {
+  border-color: var(--fg);
+}
+
+.chosenNote {
+  grid-column: 1 / -1;
+  margin: 0;
+  border-top: 1px solid color-mix(in srgb, var(--accent) 25%, transparent);
+  padding-top: 10px;
+  color: var(--fg-2);
+  font-size: 0.84rem;
+}

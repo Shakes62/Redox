@@ -1,65 +1,41 @@
 'use client';
 
-import { useEffect, useMemo, useState, type FormEvent } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   DEFAULT_DELIVERY_SETTINGS,
   FREE_STATION_DELIVERY_DETAILS,
   FREE_STATION_DELIVERY_LABEL,
   GHANA_REGIONS,
-  makeLocationId,
+  locationLabel,
   MAX_DELIVERY_FEE,
-  MAX_DELIVERY_LOCATIONS,
   URGENT_STATION_DELIVERY_LABEL,
   type DeliveryLocation,
-  type DeliverySettings,
-  type GhanaRegion
+  type DeliverySettings
 } from '@/lib/delivery';
 import { formatCurrency } from '@/lib/format';
+import { hasCoordinates } from '@/lib/places';
+import { DeliveryPlaceFinder } from './DeliveryPlaceFinder';
+import { DeliveryPlacesList } from './DeliveryPlacesList';
 import styles from './DeliverySettingsPanel.module.css';
 
 const STATION_REGIONS = GHANA_REGIONS.filter((region) => region !== 'Greater Accra');
 
-interface LocationDraft {
-  name: string;
-  region: GhanaRegion | '';
-  fee: string;
-  note: string;
-}
-
-const EMPTY_DRAFT: LocationDraft = { name: '', region: '', fee: '', note: '' };
-
-function parseFee(value: string): number | null {
-  if (value.trim() === '') return null;
-  const fee = Number(value);
-  if (!Number.isFinite(fee) || fee < 0 || fee > MAX_DELIVERY_FEE) return null;
-  return Math.round(fee * 100) / 100;
-}
-
-function draftProblem(draft: LocationDraft): string {
-  if (draft.name.trim().length < 2) return 'Enter the town or city name.';
-  if (!draft.region) return 'Choose the region.';
-  if (parseFee(draft.fee) === null) return 'Enter a delivery price from 0 to 10,000. Use 0 for free delivery.';
-  return '';
-}
+type Section = 'places' | 'checkout' | 'station';
 
 export function DeliverySettingsPanel() {
   const [settings, setSettings] = useState<DeliverySettings>(DEFAULT_DELIVERY_SETTINGS);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState('');
-
-  // Locations
-  const [draft, setDraft] = useState<LocationDraft>(EMPTY_DRAFT);
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [editDraft, setEditDraft] = useState<LocationDraft>(EMPTY_DRAFT);
-  const [search, setSearch] = useState('');
+  const [section, setSection] = useState<Section>('places');
   const [busyId, setBusyId] = useState<string | null>(null);
-  const [locationMessage, setLocationMessage] = useState<{ tone: 'ok' | 'error'; text: string } | null>(null);
+  const [pinTarget, setPinTarget] = useState<DeliveryLocation | null>(null);
+  const [toast, setToast] = useState<{ tone: 'ok' | 'error'; text: string } | null>(null);
+  const toastTimer = useRef<number | undefined>(undefined);
 
-  // Station delivery
+  // Station delivery form
   const [feeInput, setFeeInput] = useState('');
   const [stationRegions, setStationRegions] = useState<string[]>([]);
   const [savingStation, setSavingStation] = useState(false);
-  const [stationMessage, setStationMessage] = useState('');
 
   useEffect(() => {
     let cancelled = false;
@@ -76,136 +52,74 @@ export function DeliverySettingsPanel() {
       })
       .catch((error: Error) => { if (!cancelled) setLoadError(error.message); })
       .finally(() => { if (!cancelled) setLoading(false); });
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+      window.clearTimeout(toastTimer.current);
+    };
   }, []);
 
-  /** Sends the whole settings document. Returns the saved copy, or null on failure. */
-  const persist = async (next: DeliverySettings): Promise<DeliverySettings | null> => {
-    const response = await fetch('/api/admin/delivery-settings', {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(next)
-    }).catch(() => null);
-    const data = await response?.json().catch(() => null);
-    if (!response?.ok || !data) {
-      throw new Error(data?.error || 'Could not save. Check your connection and try again.');
-    }
-    setSettings(data);
-    return data;
+  const notify = (tone: 'ok' | 'error', text: string) => {
+    setToast({ tone, text });
+    window.clearTimeout(toastTimer.current);
+    toastTimer.current = window.setTimeout(() => setToast(null), tone === 'ok' ? 4500 : 8000);
   };
 
-  const saveLocations = async (locations: DeliveryLocation[], success: string, busy: string) => {
-    setBusyId(busy);
-    setLocationMessage(null);
+  /** Saves the whole settings document; every admin action goes through here. */
+  const persist = async (next: DeliverySettings, message: string, busyKey: string): Promise<boolean> => {
+    setBusyId(busyKey);
     try {
-      await persist({ ...settings, locations });
-      setLocationMessage({ tone: 'ok', text: success });
+      const response = await fetch('/api/admin/delivery-settings', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(next)
+      }).catch(() => null);
+      const data = await response?.json().catch(() => null);
+      if (!response?.ok || !data) throw new Error(data?.error || 'Could not save. Check your connection and try again.');
+      setSettings(data);
+      notify('ok', message);
       return true;
     } catch (error) {
-      setLocationMessage({ tone: 'error', text: error instanceof Error ? error.message : 'Could not save.' });
+      notify('error', error instanceof Error ? error.message : 'Could not save.');
       return false;
     } finally {
       setBusyId(null);
     }
   };
 
-  const addLocation = async (event: FormEvent) => {
-    event.preventDefault();
-    const problem = draftProblem(draft);
-    if (problem) {
-      setLocationMessage({ tone: 'error', text: problem });
-      return;
-    }
-    const name = draft.name.trim().replace(/\s+/g, ' ');
-    const region = draft.region as GhanaRegion;
-    if (settings.locations.some((location) => location.name.toLowerCase() === name.toLowerCase() && location.region === region)) {
-      setLocationMessage({ tone: 'error', text: `${name} (${region}) is already on the list. Edit its price below instead.` });
-      return;
-    }
-    if (settings.locations.length >= MAX_DELIVERY_LOCATIONS) {
-      setLocationMessage({ tone: 'error', text: `You can list up to ${MAX_DELIVERY_LOCATIONS} locations.` });
-      return;
-    }
-    let id = makeLocationId(name, region);
-    for (let n = 2; settings.locations.some((location) => location.id === id); n += 1) id = `${makeLocationId(name, region)}-${n}`;
-    const fee = parseFee(draft.fee)!;
-    const added = await saveLocations(
-      [...settings.locations, { id, name, region, fee, note: draft.note.trim(), active: true }],
-      `${name} added at ${fee > 0 ? formatCurrency(fee) : 'free delivery'}. Customers can choose it now.`,
-      'new'
-    );
-    if (added) setDraft((current) => ({ ...EMPTY_DRAFT, region: current.region }));
-  };
+  const replaceLocations = (locations: DeliveryLocation[], message: string, busyKey: string) =>
+    persist({ ...settings, locations }, message, busyKey);
 
-  const startEdit = (location: DeliveryLocation) => {
-    setEditingId(location.id);
-    setEditDraft({ name: location.name, region: location.region, fee: String(location.fee), note: location.note });
-    setLocationMessage(null);
+  /** Adds a new place, or replaces the one with the same id. */
+  const upsertLocation = (location: DeliveryLocation, message: string) => {
+    const exists = settings.locations.some((candidate) => candidate.id === location.id);
+    const next = exists
+      ? settings.locations.map((candidate) => (candidate.id === location.id ? location : candidate))
+      : [...settings.locations, location];
+    return replaceLocations(next, message, location.id).then((ok) => {
+      if (ok && pinTarget?.id === location.id) setPinTarget(null);
+      return ok;
+    });
   };
-
-  const saveEdit = async (id: string) => {
-    const problem = draftProblem(editDraft);
-    if (problem) {
-      setLocationMessage({ tone: 'error', text: problem });
-      return;
-    }
-    const name = editDraft.name.trim().replace(/\s+/g, ' ');
-    const saved = await saveLocations(
-      settings.locations.map((location) => location.id === id
-        ? { ...location, name, region: editDraft.region as GhanaRegion, fee: parseFee(editDraft.fee)!, note: editDraft.note.trim() }
-        : location),
-      `${name} updated.`,
-      id
-    );
-    if (saved) setEditingId(null);
-  };
-
-  const toggleActive = (location: DeliveryLocation) => saveLocations(
-    settings.locations.map((candidate) => candidate.id === location.id ? { ...candidate, active: !candidate.active } : candidate),
-    location.active ? `${location.name} is hidden from checkout.` : `${location.name} is available at checkout again.`,
-    location.id
-  );
 
   const removeLocation = (location: DeliveryLocation) => {
-    if (!window.confirm(`Remove ${location.name} (${location.region}) from delivery locations?`)) return;
-    void saveLocations(
-      settings.locations.filter((candidate) => candidate.id !== location.id),
-      `${location.name} removed.`,
-      location.id
-    );
+    if (!window.confirm(`Remove ${locationLabel(location)} from your delivery places?`)) return;
+    void replaceLocations(settings.locations.filter((candidate) => candidate.id !== location.id), `${location.name} removed.`, location.id);
   };
-
-  const visibleLocations = useMemo(() => {
-    const query = search.trim().toLowerCase();
-    return [...settings.locations]
-      .sort((a, b) => a.region.localeCompare(b.region) || a.name.localeCompare(b.name))
-      .filter((location) => !query || `${location.name} ${location.region}`.toLowerCase().includes(query));
-  }, [settings.locations, search]);
 
   const saveStation = async () => {
     const fee = Number(feeInput);
     if (feeInput.trim() === '' || !Number.isFinite(fee) || fee < 0 || fee > MAX_DELIVERY_FEE || Math.abs(Math.round(fee * 100) - fee * 100) > 1e-6) {
-      setStationMessage('Enter a valid urgent fee with up to two decimal places.');
+      notify('error', 'Enter a valid urgent fee with up to two decimal places.');
       return;
     }
     setSavingStation(true);
-    setStationMessage('');
-    try {
-      const saved = await persist({ ...settings, eligibleRegions: stationRegions, urgentFee: fee });
-      if (saved) {
-        setFeeInput(String(saved.urgentFee));
-        setStationRegions(saved.eligibleRegions);
-      }
-      setStationMessage('Delivery options saved. Customers will see them at checkout.');
-    } catch (error) {
-      setStationMessage(error instanceof Error ? error.message : 'Could not save delivery settings.');
-    } finally {
-      setSavingStation(false);
-    }
+    const ok = await persist({ ...settings, eligibleRegions: stationRegions, urgentFee: fee }, 'Station delivery options saved.', 'station');
+    setSavingStation(false);
+    if (ok) setFeeInput(String(fee));
   };
 
   if (loading) {
-    return <section className={styles.panel}><p>Loading delivery settings…</p></section>;
+    return <section className={styles.panel}><p className={styles.muted}>Loading delivery settings…</p></section>;
   }
 
   if (loadError) {
@@ -217,192 +131,187 @@ export function DeliverySettingsPanel() {
     );
   }
 
-  const activeCount = settings.locations.filter((location) => location.active).length;
+  const live = settings.locations.filter((location) => location.active);
+  const regionsCovered = new Set(live.map((location) => location.region)).size;
+  const unpinned = settings.locations.filter((location) => !hasCoordinates(location)).length;
+  const fees = live.map((location) => location.fee);
+
+  const sections: { key: Section; label: string }[] = [
+    { key: 'places', label: `Delivery places (${settings.locations.length})` },
+    { key: 'checkout', label: 'Checkout options' },
+    { key: 'station', label: 'Station delivery' }
+  ];
 
   return (
     <div className={styles.wrap}>
-      {/* ── Delivery locations ───────────────────────────── */}
-      <section aria-labelledby="delivery-locations-title" className={styles.panel}>
-        <div className={styles.headRow}>
-          <div>
-            <h2 id="delivery-locations-title">Delivery locations</h2>
-            <p>Add the towns and cities you deliver to and set the delivery price for each. Customers pick their town at checkout and the price is added to their total.</p>
-          </div>
-          <span className={styles.countPill}>{activeCount} live</span>
+      <div className={styles.summary}>
+        <div><strong>{live.length}</strong><span>places live</span></div>
+        <div><strong>{regionsCovered}</strong><span>{regionsCovered === 1 ? 'region' : 'regions'} covered</span></div>
+        <div>
+          <strong>{fees.length ? (Math.min(...fees) === Math.max(...fees) ? (fees[0] > 0 ? formatCurrency(fees[0]) : 'Free') : `${Math.min(...fees) > 0 ? formatCurrency(Math.min(...fees)) : 'Free'}–${formatCurrency(Math.max(...fees))}`) : '—'}</strong>
+          <span>delivery prices</span>
         </div>
+        <div className={unpinned > 0 ? styles.summaryWarn : ''}>
+          <strong>{unpinned}</strong>
+          <span>{unpinned === 1 ? 'place needs' : 'places need'} a map pin</span>
+        </div>
+      </div>
 
-        <form className={styles.addForm} onSubmit={addLocation}>
-          <label>
-            <span>Town / city</span>
-            <input
-              maxLength={80}
-              onChange={(event) => setDraft({ ...draft, name: event.target.value })}
-              placeholder="e.g. Kumasi"
-              value={draft.name}
-            />
-          </label>
-          <label>
-            <span>Region</span>
-            <select onChange={(event) => setDraft({ ...draft, region: event.target.value as GhanaRegion })} value={draft.region}>
-              <option value="">Choose region</option>
-              {GHANA_REGIONS.map((region) => <option key={region} value={region}>{region}</option>)}
-            </select>
-          </label>
-          <label>
-            <span>Price (GH₵)</span>
-            <input
-              inputMode="decimal"
-              max={MAX_DELIVERY_FEE}
-              min="0"
-              onChange={(event) => setDraft({ ...draft, fee: event.target.value })}
-              placeholder="0 = free"
-              step="0.01"
-              type="number"
-              value={draft.fee}
-            />
-          </label>
-          <label className={styles.noteField}>
-            <span>Note for customers (optional)</span>
-            <input
-              maxLength={160}
-              onChange={(event) => setDraft({ ...draft, note: event.target.value })}
-              placeholder="e.g. Pick up at VIP station, 1–2 days"
-              value={draft.note}
-            />
-          </label>
-          <button className={styles.primary} disabled={busyId === 'new'} type="submit">
-            {busyId === 'new' ? 'Adding…' : 'Add location'}
+      <nav aria-label="Delivery settings" className={styles.subTabs}>
+        {sections.map((item) => (
+          <button
+            aria-pressed={section === item.key}
+            className={`${styles.subTab} ${section === item.key ? styles.subTabOn : ''}`}
+            key={item.key}
+            onClick={() => setSection(item.key)}
+            type="button"
+          >
+            {item.label}
           </button>
-        </form>
+        ))}
+      </nav>
 
-        {locationMessage && (
-          <p className={locationMessage.tone === 'ok' ? styles.ok : styles.errorText} role="status">{locationMessage.text}</p>
-        )}
-
-        {settings.locations.length === 0 ? (
-          <div className={styles.empty}>
-            No locations yet. Until you add some, checkout keeps working as before: customers choose their region and get the station delivery options below.
-          </div>
-        ) : (
-          <>
-            {settings.locations.length > 8 && (
-              <input
-                aria-label="Search locations"
-                className={styles.search}
-                onChange={(event) => setSearch(event.target.value)}
-                placeholder="Search locations"
-                type="search"
-                value={search}
-              />
-            )}
-            <ul className={styles.locationList}>
-              {visibleLocations.map((location) => {
-                const busy = busyId === location.id;
-                if (editingId === location.id) {
-                  return (
-                    <li className={`${styles.locationRow} ${styles.editing}`} key={location.id}>
-                      <div className={styles.editGrid}>
-                        <label><span>Town / city</span><input maxLength={80} onChange={(event) => setEditDraft({ ...editDraft, name: event.target.value })} value={editDraft.name} /></label>
-                        <label>
-                          <span>Region</span>
-                          <select onChange={(event) => setEditDraft({ ...editDraft, region: event.target.value as GhanaRegion })} value={editDraft.region}>
-                            {GHANA_REGIONS.map((region) => <option key={region} value={region}>{region}</option>)}
-                          </select>
-                        </label>
-                        <label><span>Price (GH₵)</span><input inputMode="decimal" min="0" onChange={(event) => setEditDraft({ ...editDraft, fee: event.target.value })} step="0.01" type="number" value={editDraft.fee} /></label>
-                        <label className={styles.noteField}><span>Note for customers</span><input maxLength={160} onChange={(event) => setEditDraft({ ...editDraft, note: event.target.value })} value={editDraft.note} /></label>
-                      </div>
-                      <div className={styles.rowActions}>
-                        <button className={styles.primary} disabled={busy} onClick={() => saveEdit(location.id)} type="button">{busy ? 'Saving…' : 'Save'}</button>
-                        <button className={styles.ghost} disabled={busy} onClick={() => setEditingId(null)} type="button">Cancel</button>
-                      </div>
-                    </li>
-                  );
-                }
-                return (
-                  <li className={`${styles.locationRow} ${location.active ? '' : styles.paused}`} key={location.id}>
-                    <div className={styles.locationInfo}>
-                      <strong>{location.name}</strong>
-                      <span>{location.region}{location.note ? ` · ${location.note}` : ''}</span>
-                    </div>
-                    <span className={`${styles.price} ${location.fee === 0 ? styles.freePrice : ''}`}>
-                      {location.fee > 0 ? formatCurrency(location.fee) : 'Free'}
-                    </span>
-                    <div className={styles.rowActions}>
-                      <button
-                        aria-pressed={location.active}
-                        className={`${styles.switch} ${location.active ? styles.switchOn : ''}`}
-                        disabled={busy}
-                        onClick={() => toggleActive(location)}
-                        title={location.active ? 'Shown at checkout — click to hide' : 'Hidden — click to show at checkout'}
-                        type="button"
-                      >
-                        <span className={styles.switchKnob} />
-                        <span className={styles.switchLabel}>{location.active ? 'Live' : 'Hidden'}</span>
-                      </button>
-                      <button className={styles.ghost} disabled={busy || editingId !== null} onClick={() => startEdit(location)} type="button">Edit</button>
-                      <button className={styles.danger} disabled={busy} onClick={() => removeLocation(location)} type="button">Delete</button>
-                    </div>
-                  </li>
-                );
-              })}
-              {visibleLocations.length === 0 && <li className={styles.empty}>No location matches &ldquo;{search}&rdquo;.</li>}
-            </ul>
-          </>
-        )}
-      </section>
-
-      {/* ── Station delivery (existing options) ──────────── */}
-      <section aria-labelledby="delivery-settings-title" className={styles.panel}>
-        <h2 id="delivery-settings-title">Station delivery options</h2>
-        <p>
-          Used for regions customers choose when their town is not on your list
-          {settings.locations.length === 0 ? ' (all orders, until you add locations)' : ''}, and for urgent delivery. Greater Accra is always excluded.
+      {toast && (
+        <p className={toast.tone === 'ok' ? styles.toastOk : styles.toastError} role="status">
+          {toast.tone === 'ok' ? '✓ ' : ''}{toast.text}
         </p>
-        <div className={styles.info}>{FREE_STATION_DELIVERY_LABEL}: no delivery fee. {FREE_STATION_DELIVERY_DETAILS}</div>
-        <label className={styles.feeLabel} htmlFor="urgent-delivery-fee">{URGENT_STATION_DELIVERY_LABEL} extra fee (GH₵)</label>
-        <input
-          className={styles.feeInput}
-          id="urgent-delivery-fee"
-          max={MAX_DELIVERY_FEE}
-          min="0"
-          onChange={(event) => { setFeeInput(event.target.value); setStationMessage(''); }}
-          step="0.01"
-          type="number"
-          value={feeInput}
-        />
-        <p className={styles.helper}>
-          {Number(feeInput) > 0
-            ? `Customers choosing ${URGENT_STATION_DELIVERY_LABEL} pay ${formatCurrency(Number(feeInput))} extra (on top of a location's price).`
-            : `Set an amount above zero to offer ${URGENT_STATION_DELIVERY_LABEL}.`}
-        </p>
-        <div className={styles.regionHeader}>
-          <h3>Regions with these options</h3>
-          <div>
-            <button onClick={() => setStationRegions([...STATION_REGIONS])} type="button">Select all</button>
-            <button onClick={() => setStationRegions([])} type="button">Clear</button>
+      )}
+
+      {section === 'places' && (
+        <>
+          <DeliveryPlaceFinder
+            locations={settings.locations}
+            onCancelPin={() => setPinTarget(null)}
+            onSave={upsertLocation}
+            pinTarget={pinTarget}
+          />
+          <DeliveryPlacesList
+            busyId={busyId}
+            locations={settings.locations}
+            onPin={(location) => setPinTarget(location)}
+            onRemove={removeLocation}
+            onReplaceAll={replaceLocations}
+            onUpdate={upsertLocation}
+          />
+        </>
+      )}
+
+      {section === 'checkout' && (
+        <section aria-labelledby="checkout-options-title" className={styles.panel}>
+          <div className={styles.cardHead}>
+            <div>
+              <h3 id="checkout-options-title">What customers can do at checkout</h3>
+              <p>Changes apply immediately to every customer.</p>
+            </div>
           </div>
-        </div>
-        <div className={styles.regions}>
-          {STATION_REGIONS.map((region) => (
-            <label key={region}>
-              <input
-                checked={stationRegions.includes(region)}
-                onChange={() => {
-                  setStationRegions((current) => current.includes(region) ? current.filter((item) => item !== region) : [...current, region]);
-                  setStationMessage('');
-                }}
-                type="checkbox"
-              />
-              {region}
-            </label>
-          ))}
-        </div>
-        {stationMessage && <p className={styles.message} role="status">{stationMessage}</p>}
-        <button className={styles.primary} disabled={savingStation} onClick={saveStation} type="button">
-          {savingStation ? 'Saving…' : 'Save delivery options'}
-        </button>
-      </section>
+
+          <div className={styles.optionCard}>
+            <div>
+              <strong>📍 “Find the closest place to me”</strong>
+              <p>
+                Customers tap once and their phone suggests your nearest delivery places, with the distance and price.
+                Their location stays on their phone. Only places with a map pin can be suggested
+                {unpinned > 0 ? ` — ${unpinned} of yours ${unpinned === 1 ? 'has' : 'have'} no pin yet.` : '.'}
+              </p>
+            </div>
+            <button
+              aria-pressed={settings.useLocation}
+              className={`${styles.switch} ${settings.useLocation ? styles.switchOn : ''}`}
+              disabled={busyId === 'use-location'}
+              onClick={() => persist({ ...settings, useLocation: !settings.useLocation }, settings.useLocation ? 'Customers will no longer be offered location suggestions.' : 'Customers can now find their closest place.', 'use-location')}
+              type="button"
+            >
+              <span className={styles.switchKnob} />
+              <span className={styles.switchLabel}>{settings.useLocation ? 'On' : 'Off'}</span>
+            </button>
+          </div>
+
+          <div className={styles.optionCard}>
+            <div>
+              <strong>“My town isn’t listed”</strong>
+              <p>
+                Lets customers outside your list still order: they choose their region and get the station delivery
+                rules (free station delivery, or a call from your team). Turn it off to accept orders only for your listed places.
+              </p>
+            </div>
+            <button
+              aria-pressed={settings.allowUnlisted}
+              className={`${styles.switch} ${settings.allowUnlisted ? styles.switchOn : ''}`}
+              disabled={busyId === 'allow-unlisted'}
+              onClick={() => {
+                if (settings.allowUnlisted && live.length === 0 && !window.confirm('You have no live places yet. If you turn this off, customers cannot choose any delivery place. Continue?')) return;
+                void persist({ ...settings, allowUnlisted: !settings.allowUnlisted }, settings.allowUnlisted ? 'Only your listed places can be chosen now.' : 'Customers in other towns can order again.', 'allow-unlisted');
+              }}
+              type="button"
+            >
+              <span className={styles.switchKnob} />
+              <span className={styles.switchLabel}>{settings.allowUnlisted ? 'On' : 'Off'}</span>
+            </button>
+          </div>
+
+          <div className={styles.previewBox}>
+            <span className={styles.label}>What customers see on the delivery step</span>
+            <ol>
+              {settings.useLocation && live.some(hasCoordinates) && <li>📍 Find the closest place to me</li>}
+              <li>Search or pick from {live.length} {live.length === 1 ? 'place' : 'places'}{settings.locations.some((location) => location.featured && location.active) ? ' (★ popular ones first)' : ''}</li>
+              {settings.allowUnlisted && <li>My town isn’t listed → choose region</li>}
+            </ol>
+          </div>
+        </section>
+      )}
+
+      {section === 'station' && (
+        <section aria-labelledby="delivery-settings-title" className={styles.panel}>
+          <div className={styles.cardHead}>
+            <div>
+              <h3 id="delivery-settings-title">Station delivery options</h3>
+              <p>
+                For customers whose town is not listed{settings.locations.length === 0 ? ' (everyone, until you add places)' : ''}, and the
+                urgent option on top of a place&apos;s price. Greater Accra is always excluded.
+              </p>
+            </div>
+          </div>
+          <div className={styles.info}>{FREE_STATION_DELIVERY_LABEL}: no delivery fee. {FREE_STATION_DELIVERY_DETAILS}</div>
+          <label className={styles.label} htmlFor="urgent-delivery-fee">{URGENT_STATION_DELIVERY_LABEL} — extra fee (GH₵)</label>
+          <input
+            className={`${styles.input} ${styles.feeInput}`}
+            id="urgent-delivery-fee"
+            max={MAX_DELIVERY_FEE}
+            min="0"
+            onChange={(event) => setFeeInput(event.target.value)}
+            step="0.01"
+            type="number"
+            value={feeInput}
+          />
+          <p className={styles.helper}>
+            {Number(feeInput) > 0
+              ? `Customers choosing ${URGENT_STATION_DELIVERY_LABEL} pay ${formatCurrency(Number(feeInput))} extra (on top of a place's price).`
+              : `Set an amount above zero to offer ${URGENT_STATION_DELIVERY_LABEL}.`}
+          </p>
+          <div className={styles.regionHeader}>
+            <span className={styles.label}>Regions with these options</span>
+            <div>
+              <button onClick={() => setStationRegions([...STATION_REGIONS])} type="button">Select all</button>
+              <button onClick={() => setStationRegions([])} type="button">Clear</button>
+            </div>
+          </div>
+          <div className={styles.regions}>
+            {STATION_REGIONS.map((region) => (
+              <label key={region}>
+                <input
+                  checked={stationRegions.includes(region)}
+                  onChange={() => setStationRegions((current) => current.includes(region) ? current.filter((item) => item !== region) : [...current, region])}
+                  type="checkbox"
+                />
+                {region}
+              </label>
+            ))}
+          </div>
+          <button className={styles.primary} disabled={savingStation} onClick={saveStation} type="button">
+            {savingStation ? 'Saving…' : 'Save station options'}
+          </button>
+        </section>
+      )}
     </div>
   );
 }

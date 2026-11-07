@@ -12,7 +12,12 @@ const locationSchema = z.object({
   region: z.enum(GHANA_REGIONS),
   fee: z.number().finite().min(0).max(MAX_DELIVERY_FEE),
   note: z.string().trim().max(160).optional().default(''),
-  active: z.boolean().optional().default(true)
+  active: z.boolean().optional().default(true),
+  featured: z.boolean().optional().default(false),
+  area: z.string().trim().max(80).optional().default(''),
+  lat: z.number().finite().min(-90).max(90).optional(),
+  lon: z.number().finite().min(-180).max(180).optional(),
+  osmId: z.string().regex(/^[NWR]\d{1,15}$/).optional()
 });
 
 const settingsSchema = z.object({
@@ -20,7 +25,8 @@ const settingsSchema = z.object({
   urgentFee: z.number().finite().min(0).max(MAX_DELIVERY_FEE).multipleOf(0.01),
   // Optional so an older admin tab that only knows about regions cannot wipe the list.
   locations: z.array(locationSchema).max(MAX_DELIVERY_LOCATIONS).optional(),
-  allowUnlisted: z.boolean().optional()
+  allowUnlisted: z.boolean().optional(),
+  useLocation: z.boolean().optional()
 });
 
 export async function GET() {
@@ -48,7 +54,8 @@ export async function PUT(request: Request) {
       eligibleRegions: parsed.data.eligibleRegions,
       urgentFee: parsed.data.urgentFee,
       locations: parsed.data.locations ?? current.locations,
-      allowUnlisted: parsed.data.allowUnlisted ?? current.allowUnlisted
+      allowUnlisted: parsed.data.allowUnlisted ?? current.allowUnlisted,
+      useLocation: parsed.data.useLocation ?? current.useLocation
     }));
   } catch (error) {
     console.error('Could not save delivery settings:', error);

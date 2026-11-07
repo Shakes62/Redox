@@ -177,7 +177,10 @@ export function CheckoutFlow({ items, fromCart, onExit, exitLabel, onSuccess, on
     const next: Errors = {};
     if (regionMode && !delivery.region) next.region = 'Choose your region.';
     if (!regionMode && !location) next.location = 'Choose your town or city.';
-    if (delivery.address.trim().length < 5) next.address = 'Add a little more detail (at least 5 characters).';
+    // The address box appears once a place is chosen, so only ask for it then.
+    if ((regionMode ? delivery.region : location) && delivery.address.trim().length < 5) {
+      next.address = 'Add a little more detail (at least 5 characters).';
+    }
     return next;
   };
 
