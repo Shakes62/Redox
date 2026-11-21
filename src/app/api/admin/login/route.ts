@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { createAdminSession, getAdminEmail } from '@/lib/admin-auth';
 import { ADMIN_SESSION_SECONDS } from '@/lib/admin-session';
 import { rateLimit, requestKey } from '@/lib/rate-limit';
+import { getFirebaseWebApiKey } from '@/lib/firebase-config';
 
 export async function POST(request: Request) {
   const limit = rateLimit(`admin-login:${requestKey(request)}`, 5, 60_000);
@@ -20,7 +21,10 @@ export async function POST(request: Request) {
     const adminEmail = getAdminEmail();
     if (!adminEmail) {
       console.error('ADMIN_EMAIL is not configured; admin sign in is disabled.');
-      return NextResponse.json({ error: 'Admin sign in is not configured.' }, { status: 503 });
+      return NextResponse.json(
+        { error: 'Admin sign in is not configured: set ADMIN_EMAIL in the hosting environment variables and redeploy.' },
+        { status: 503 }
+      );
     }
 
     if (typeof email !== 'string' || typeof password !== 'string') {
@@ -33,11 +37,7 @@ export async function POST(request: Request) {
     }
 
     // 2. Perform Server-side Firebase REST authentication
-    const apiKey = (process.env.FIREBASE_API_KEY || '').trim();
-    if (!apiKey) {
-      console.error('FIREBASE_API_KEY is not configured; admin sign in is disabled.');
-      return NextResponse.json({ error: 'Admin sign in is not configured.' }, { status: 503 });
-    }
+    const apiKey = getFirebaseWebApiKey();
     const signInUrl = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${encodeURIComponent(apiKey)}`;
     
     const signInRes = await fetch(signInUrl, {
