@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { Archivo, Geist, Geist_Mono } from 'next/font/google';
+import localFont from 'next/font/local';
 import { Footer } from '@/components/layout/Footer';
 import { Navbar } from '@/components/layout/Navbar';
 import { StoreHydration } from '@/components/layout/StoreHydration';
@@ -9,25 +9,29 @@ import { buildMetadata } from '@/lib/metadata';
 import './globals.css';
 
 /** Headlines: a wide, heavy grotesk that carries the streetwear voice. */
-const archivo = Archivo({
+// Fonts are self-hosted (latin subset, variable) from ./fonts rather than fetched
+// from Google at build time, so a Google Fonts hiccup can never fail a deploy.
+const archivo = localFont({
+  src: './fonts/Archivo-Variable.woff2',
   display: 'swap',
-  subsets: ['latin'],
   variable: '--font-archivo',
-  axes: ['wdth']
+  weight: '100 900',
+  declarations: [{ prop: 'font-stretch', value: '62% 125%' }]
 });
 
 /** Everything people read and tap: clear at small sizes, friendly at large ones. */
-const geist = Geist({
+const geist = localFont({
+  src: './fonts/Geist-Variable.woff2',
   display: 'swap',
-  subsets: ['latin'],
-  variable: '--font-geist'
+  variable: '--font-geist',
+  weight: '100 900'
 });
 
-const geistMono = Geist_Mono({
+const geistMono = localFont({
+  src: './fonts/GeistMono-Variable.woff2',
   display: 'swap',
-  subsets: ['latin'],
   variable: '--font-geist-mono',
-  weight: ['400', '500', '600']
+  weight: '100 900'
 });
 
 export const metadata: Metadata = buildMetadata();

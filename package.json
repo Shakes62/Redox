@@ -18,10 +18,10 @@
     "@neondatabase/serverless": "^1.1.0",
     "cloudinary": "^2.10.0",
     "gsap": "^3.12.7",
-    "next": "16.3.8",
+    "next": "16.4.6",
     "react": "19.3.0",
     "react-dom": "19.3.0",
-    "zod": "^3.25.76",
+    "zod": "^4.6.7",
     "zustand": "^5.0.8"
   },
   "devDependencies": {
@@ -30,7 +30,7 @@
     "@types/react": "19.3.0",
     "@types/react-dom": "19.2.3",
     "eslint": "9.39.5",
-    "eslint-config-next": "16.3.8",
+    "eslint-config-next": "16.4.6",
     "typescript": "^5.9.3"
   }
 }
