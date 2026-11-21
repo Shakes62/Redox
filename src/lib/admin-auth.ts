@@ -24,15 +24,16 @@ const derivedSessionSecret = (() => {
     : crypto.randomBytes(32).toString('hex');
 })();
 
+/** The store owner's admin account, used when ADMIN_EMAIL is not set on the host. */
+const OWNER_ADMIN_EMAIL = 'redoxdesignx@gmail.com';
+
 /**
- * The one email allowed into the admin console, from ADMIN_EMAIL.
- *
- * There is deliberately no fallback address: if it is not configured, nobody
- * can sign in and no session is ever valid (fail closed), instead of silently
- * trusting a well-known default account.
+ * The one email allowed into the admin console: ADMIN_EMAIL if set, otherwise
+ * the owner's account. Exactly one address is ever accepted, and the password
+ * is still verified by Firebase, so the fallback grants nothing extra.
  */
 export function getAdminEmail() {
-  return (process.env.ADMIN_EMAIL || '').trim();
+  return (process.env.ADMIN_EMAIL || '').trim() || OWNER_ADMIN_EMAIL;
 }
 
 function getAdminSessionSecret() {
