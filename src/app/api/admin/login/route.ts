@@ -18,6 +18,14 @@ export async function POST(request: Request) {
     }
 
     const adminEmail = getAdminEmail();
+    if (!adminEmail) {
+      console.error('ADMIN_EMAIL is not configured; admin sign in is disabled.');
+      return NextResponse.json({ error: 'Admin sign in is not configured.' }, { status: 503 });
+    }
+
+    if (typeof email !== 'string' || typeof password !== 'string') {
+      return NextResponse.json({ error: 'Email and password are required.' }, { status: 400 });
+    }
 
     // 1. Strictly verify that the email matches the authorized admin email in .env
     if (email.trim().toLowerCase() !== adminEmail.trim().toLowerCase()) {
@@ -25,14 +33,19 @@ export async function POST(request: Request) {
     }
 
     // 2. Perform Server-side Firebase REST authentication
-    const apiKey = process.env.FIREBASE_API_KEY || process.env.NEXT_PUBLIC_FIREBASE_API_KEY || "AIzaSyD4rIJfGT9SLfYQ1nbTMDmVIqoSsXHKSpg";
-    const signInUrl = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${apiKey}`;
+    const apiKey = (process.env.FIREBASE_API_KEY || '').trim();
+    if (!apiKey) {
+      console.error('FIREBASE_API_KEY is not configured; admin sign in is disabled.');
+      return NextResponse.json({ error: 'Admin sign in is not configured.' }, { status: 503 });
+    }
+    const signInUrl = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${encodeURIComponent(apiKey)}`;
     
     const signInRes = await fetch(signInUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        email,
+        // Always the configured address, never the raw input, so case and stray spaces cannot matter.
+        email: adminEmail,
         password,
         returnSecureToken: true
       })
@@ -41,11 +54,14 @@ export async function POST(request: Request) {
     const signInData = await signInRes.json();
     
     if (!signInRes.ok) {
-      const errMsg = signInData.error?.message || '';
-      if (errMsg.includes('INVALID_PASSWORD') || errMsg.includes('EMAIL_NOT_FOUND')) {
-        return NextResponse.json({ error: 'Invalid admin email or password.' }, { status: 401 });
-      }
-      return NextResponse.json({ error: errMsg || 'Authentication failed via Firebase.' }, { status: 401 });
+      // Do not echo Firebase's internal error codes back to the caller.
+      console.warn('Admin sign in rejected by Firebase:', signInData.error?.message || signInRes.status);
+      return NextResponse.json({ error: 'Invalid admin email or password.' }, { status: 401 });
+    }
+
+    // Defence in depth: the account Firebase actually authenticated must be the admin.
+    if (String(signInData.email || '').trim().toLowerCase() !== adminEmail.toLowerCase()) {
+      return NextResponse.json({ error: 'Access Denied. Unauthorized admin account.' }, { status: 403 });
     }
 
     // 3. Sign the issue time so the session cannot outlive twelve hours.

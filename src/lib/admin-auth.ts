@@ -24,8 +24,15 @@ const derivedSessionSecret = (() => {
     : crypto.randomBytes(32).toString('hex');
 })();
 
+/**
+ * The one email allowed into the admin console, from ADMIN_EMAIL.
+ *
+ * There is deliberately no fallback address: if it is not configured, nobody
+ * can sign in and no session is ever valid (fail closed), instead of silently
+ * trusting a well-known default account.
+ */
 export function getAdminEmail() {
-  return process.env.ADMIN_EMAIL || 'admin@redoxdesignx.com';
+  return (process.env.ADMIN_EMAIL || '').trim();
 }
 
 function getAdminSessionSecret() {
@@ -37,7 +44,9 @@ export function createAdminSession(email = getAdminEmail()) {
 }
 
 export function isAdminSessionValid(token?: string) {
-  return isAdminSessionTokenValid(token, getAdminEmail(), getAdminSessionSecret());
+  const adminEmail = getAdminEmail();
+  if (!adminEmail) return false;
+  return isAdminSessionTokenValid(token, adminEmail, getAdminSessionSecret());
 }
 
 export async function getAdminSessionToken() {
