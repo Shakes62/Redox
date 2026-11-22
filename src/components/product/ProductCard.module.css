@@ -1,55 +1,50 @@
 .card {
   position: relative;
-  min-width: 0;
   display: flex;
+  min-width: 0;
   flex-direction: column;
+}
+
+.mediaWrap {
+  position: relative;
 }
 
 .media {
   position: relative;
+  isolation: isolate;
   display: block;
   overflow: hidden;
-  aspect-ratio: 3 / 4;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  background: var(--surface-2);
-  box-shadow: var(--shadow-sm);
+  aspect-ratio: 4 / 5;
+  border-radius: var(--radius-xl);
+  background: #e9e9ec;
   transition:
-    border-color var(--duration-normal) var(--ease-out),
-    box-shadow var(--duration-normal) var(--ease-out),
-    transform var(--duration-normal) var(--ease-out);
-}
-
-.media::after {
-  position: absolute;
-  inset: 45% 0 0;
-  z-index: 1;
-  background: linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.5));
-  content: '';
-  pointer-events: none;
+    transform var(--duration-normal) var(--ease-out),
+    box-shadow var(--duration-normal) var(--ease-out);
 }
 
 .card:hover .media,
 .media:focus-visible {
-  border-color: var(--border-strong);
-  box-shadow: var(--shadow-md);
-  transform: translateY(-3px);
+  box-shadow: 0 24px 44px -26px rgba(0, 0, 0, 0.55);
+  transform: translateY(-4px);
 }
 
 .image {
   object-fit: cover;
   transition:
     opacity var(--duration-normal) var(--ease-out),
-    transform var(--duration-slow) var(--ease-out);
+    transform 900ms var(--ease-out);
 }
 
-.imageSecondary {
+.imagePrimary {
+  animation: fadeIn var(--duration-normal) var(--ease-out);
+}
+
+.imageAlternate {
   opacity: 0;
 }
 
-.media:hover .imagePrimary,
-.media:focus-visible .imagePrimary {
-  transform: scale(1.045);
+.media:hover .imagePrimary {
+  transform: scale(1.04);
 }
 
 .hasAlternate:hover .imagePrimary,
@@ -57,209 +52,245 @@
   opacity: 0;
 }
 
-.hasAlternate:hover .imageSecondary,
-.hasAlternate:focus-visible .imageSecondary {
+.hasAlternate:hover .imageAlternate,
+.hasAlternate:focus-visible .imageAlternate {
   opacity: 1;
-  transform: scale(1.045);
+  transform: scale(1.04);
 }
 
-.mediaAction {
+/* Price on the photo: the first thing anyone looks for. */
+.pricePill {
   position: absolute;
-  right: var(--space-4);
-  bottom: var(--space-4);
-  left: var(--space-4);
+  bottom: 10px;
+  left: 10px;
   z-index: 2;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  color: #ffffff;
-  font-size: 0.8rem;
-  font-weight: 600;
-  opacity: 0;
-  transform: translateY(3px);
-  transition: opacity var(--duration-fast) var(--ease-out), transform var(--duration-fast) var(--ease-out);
-}
-
-.mediaAction span {
-  font-family: var(--font-body), sans-serif;
-  font-size: 1.25rem;
+  display: inline-flex;
+  max-width: calc(100% - 20px);
+  align-items: baseline;
+  gap: 6px;
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 6px 18px -8px rgba(0, 0, 0, 0.35);
+  color: #111111;
+  padding: 7px 12px;
+  font-family: var(--font-display);
+  font-variation-settings: var(--display-width);
+  font-size: 0.95rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
   line-height: 1;
-  transition: transform var(--duration-fast) var(--ease-out);
+  white-space: nowrap;
 }
 
-.media:hover .mediaAction,
-.media:focus-visible .mediaAction {
-  opacity: 1;
-  transform: translateY(0);
+.salePrice {
+  color: #c01f30;
 }
 
-.media:hover .mediaAction span,
-.media:focus-visible .mediaAction span {
-  transform: translate(2px, -2px);
+.wasPrice {
+  color: #77736b;
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  font-weight: 500;
+}
+
+.soldOut .image {
+  filter: grayscale(0.7);
+  opacity: 0.75;
+}
+
+.soldOutBar {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  left: 10px;
+  z-index: 2;
+  border-radius: var(--radius-full);
+  background: #111111;
+  color: #ffffff;
+  padding: 9px 0;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-align: center;
 }
 
 .badge {
   position: absolute;
-  top: var(--space-3);
-  left: var(--space-3);
+  top: 10px;
+  left: 10px;
   z-index: 2;
+  pointer-events: none;
 }
 
-.wishlist {
+.save {
   position: absolute;
-  top: var(--space-3);
-  right: var(--space-3);
+  top: 8px;
+  right: 8px;
   z-index: 2;
   display: inline-grid;
-  width: 42px;
-  height: 42px;
+  width: 40px;
+  height: 40px;
   place-items: center;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  border-radius: var(--radius-full);
-  background: rgba(12, 12, 12, 0.5);
-  color: #ffffff;
-  backdrop-filter: blur(14px);
-  cursor: pointer;
-  transition: color var(--duration-fast) var(--ease-out), background var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out), transform var(--duration-fast) var(--ease-out);
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.86);
+  box-shadow: 0 4px 14px -6px rgba(0, 0, 0, 0.35);
+  color: #111111;
+  backdrop-filter: blur(10px);
+  transition: transform var(--duration-fast) var(--ease-spring), color var(--duration-fast) var(--ease-out);
 }
 
-.wishlist:hover,
-.wishlist:focus-visible {
-  border-color: rgba(255, 255, 255, 0.5);
-  background: rgba(12, 12, 12, 0.78);
-  transform: scale(1.06);
+.save svg {
+  width: 19px;
+  height: 19px;
 }
 
-.wishlistActive {
-  color: #ff4d5e;
+.save:hover {
+  transform: scale(1.08);
 }
 
-.wishlistActive svg {
+.save:active {
+  transform: scale(0.92);
+}
+
+.saveOn {
+  color: #e0293d;
+}
+
+.saveOn svg {
   fill: currentColor;
   animation: popIn 360ms var(--ease-spring);
 }
 
+/* ── Under the photo ───────────────────────────────── */
 .meta {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-content: start;
-  align-items: start;
-  gap: 2px var(--space-3);
-  flex: 1;
-  padding: var(--space-3) 2px 0;
+  gap: 8px;
+  padding: 12px 2px 0;
 }
 
-.details {
-  min-width: 0;
-}
-
-.details a {
-  text-decoration: none;
-}
-
-.details a:hover .name,
-.details a:focus-visible .name {
+.name {
+  overflow: hidden;
+  margin: 0;
   color: var(--fg);
+  font-size: clamp(0.92rem, 1.3vw, 1rem);
+  font-weight: 650;
+  line-height: 1.3;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.name a:hover {
   text-decoration: underline;
   text-decoration-color: var(--accent);
   text-underline-offset: 3px;
 }
 
-.name {
-  margin: 0;
-  color: var(--fg);
-  font-family: var(--font-body);
-  font-size: clamp(0.92rem, 1.5vw, 1rem);
-  font-weight: 600;
-  line-height: 1.35;
-  overflow-wrap: break-word;
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
 }
 
-.collection {
-  margin: 0 0 5px;
-  color: var(--fg-3);
-  font-family: var(--font-mono);
-  font-size: 0.68rem;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
+.dots {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 22px;
 }
 
-.bulkHint {
-  display: inline-flex;
-  margin: 7px 0 0;
-  padding: 4px 8px;
-  border-radius: var(--radius-full);
-  background: var(--warning-soft);
-  color: var(--warning);
-  font-size: 0.72rem;
-  font-weight: 700;
-  line-height: 1.25;
-}
-
-.priceWrap {
-  display: grid;
-  justify-items: end;
-  gap: 2px;
-  white-space: nowrap;
+.dot {
+  position: relative;
+  width: 16px;
+  height: 16px;
   flex-shrink: 0;
+  border: 0;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.16);
+  padding: 0;
+  transition: transform var(--duration-fast) var(--ease-spring), box-shadow var(--duration-fast) var(--ease-out);
 }
 
-.price,
-.salePrice {
-  color: var(--fg);
-  font-size: 0.95rem;
+/* Bigger tap area than the dot itself. */
+.dot::before {
+  position: absolute;
+  inset: -5px -3px;
+  content: '';
+}
+
+.dot:not(:disabled):hover {
+  transform: scale(1.2);
+}
+
+.dot:disabled {
+  cursor: default;
+}
+
+.dotOn {
+  box-shadow:
+    inset 0 0 0 1px rgba(0, 0, 0, 0.16),
+    0 0 0 2px var(--bg),
+    0 0 0 3.5px var(--fg);
+  transform: scale(1.1);
+}
+
+.more {
+  margin-left: 1px;
+  color: var(--fg-3);
+  font-size: 0.75rem;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
 
-.salePrice {
-  color: var(--accent-text);
-}
-
-.comparePrice {
-  color: var(--fg-3);
-  font-size: 0.75rem;
-  text-decoration: line-through;
+.bulk {
+  border-radius: var(--radius-full);
+  background: var(--success-soft);
+  color: var(--success);
+  padding: 3px 8px;
+  font-size: 0.72rem;
+  font-weight: 750;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 
 .media:focus-visible,
-.wishlist:focus-visible {
+.save:focus-visible,
+.dot:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 3px;
 }
 
 @media (max-width: 600px) {
+  .media {
+    border-radius: var(--radius-lg);
+  }
+
+  .pricePill {
+    bottom: 8px;
+    left: 8px;
+    padding: 6px 10px;
+    font-size: 0.86rem;
+  }
+
+  .save {
+    top: 6px;
+    right: 6px;
+    width: 36px;
+    height: 36px;
+  }
+
   .meta {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .priceWrap {
-    display: flex;
-    align-items: baseline;
-    justify-items: start;
-    gap: var(--space-2);
-  }
-
-  .wishlist {
-    width: 38px;
-    height: 38px;
+    gap: 6px;
+    padding-top: 10px;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .media,
   .image,
-  .mediaAction,
-  .mediaAction span,
-  .wishlist {
+  .save,
+  .dot {
     transition: none;
-  }
-}
-
-/* No hover on phones: keep the "View details" hint visible. */
-@media (hover: none) {
-  .mediaAction {
-    opacity: 0.92;
-    transform: none;
   }
 }

@@ -1,4 +1,4 @@
-import { ProductCard } from '@/components/product/ProductCard';
+import { ShopGrid } from '@/components/commerce/ShopGrid';
 import { getVisibleDbProducts } from '@/lib/catalog-db';
 import { buildMetadata } from '@/lib/metadata';
 import styles from '../pages.module.css';
@@ -7,28 +7,20 @@ export const dynamic = 'force-dynamic';
 
 export const metadata = buildMetadata({
   title: 'Shop',
-  description: 'Shop limited-run REDOXDESIGNX hoodies, tees, cargos, outerwear, and accessories.',
+  description: 'Heavy cotton tees, raglans and caps from REDOXDESIGNX. Buy one or buy in bulk.',
   path: '/shop'
 });
 
-export default async function ShopPage() {
-  const products = await getVisibleDbProducts();
+interface ShopPageProps {
+  searchParams: Promise<{ kind?: string }>;
+}
+
+export default async function ShopPage({ searchParams }: ShopPageProps) {
+  const [{ kind }, products] = await Promise.all([searchParams, getVisibleDbProducts()]);
 
   return (
-    <div className={styles.homePage}>
-      <section className={styles.catalogSection}>
-        {products.length > 0 ? (
-          <div className={styles.landingGrid}>
-            {products.map((product, index) => (
-              <ProductCard key={product.id} priority={index === 0} product={product} />
-            ))}
-          </div>
-        ) : (
-          <div className={styles.emptyState}>
-            <p>No products available yet.</p>
-          </div>
-        )}
-      </section>
+    <div className={styles.storePage}>
+      <ShopGrid initialKind={kind} products={products} syncUrl title="Shop" />
     </div>
   );
 }

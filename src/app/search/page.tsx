@@ -1,6 +1,6 @@
 import { ShopGrid } from '@/components/commerce/ShopGrid';
-import { Button } from '@/components/ui/Button';
-import { getVisibleDbProducts, getDbCollections } from '@/lib/catalog-db';
+import { SearchIcon } from '@/components/ui/Icons';
+import { getVisibleDbProducts } from '@/lib/catalog-db';
 import { buildMetadata } from '@/lib/metadata';
 import styles from '../pages.module.css';
 
@@ -8,38 +8,36 @@ interface SearchPageProps {
   searchParams: Promise<{ q?: string }>;
 }
 
+export const dynamic = 'force-dynamic';
+
 export const metadata = buildMetadata({
   title: 'Search',
-  description: 'Search REDOXDESIGNX products and collections.',
+  description: 'Search REDOXDESIGNX tees, raglans and caps.',
   path: '/search'
 });
 
 export default async function SearchPage({ searchParams }: SearchPageProps) {
-  const query = (await searchParams)?.q || '';
-  const products = await getVisibleDbProducts();
-  const collections = await getDbCollections();
+  const [{ q }, products] = await Promise.all([searchParams, getVisibleDbProducts()]);
+  const query = (q || '').trim();
 
   return (
-    <>
-      <header className="pageHeader">
-        <div className="pageHeaderInner">
-          <p className="eyebrow">Search</p>
-          <h1 className="pageTitle">{query ? `Results for ${query}` : 'Find the piece.'}</h1>
-          <p className="pageLead">Search hoodie, cargo, tee, black, red, or a collection name.</p>
-        </div>
-      </header>
-      <section className={styles.section} style={{ paddingBottom: 0 }}>
-        <div className={styles.tight}>
-          <form action="/search" className={styles.form}>
-            <div className={styles.field}>
-              <label htmlFor="q">Search term</label>
-              <input defaultValue={query} id="q" name="q" placeholder="black hoodie" />
-            </div>
-            <Button type="submit">Search</Button>
-          </form>
-        </div>
-      </section>
-      <ShopGrid collections={collections} products={products} searchQuery={query} />
-    </>
+    <div className={styles.storePage}>
+      <form action="/search" className={styles.searchBar} role="search">
+        <SearchIcon aria-hidden="true" className={styles.searchIcon} />
+        <input
+          aria-label="Search"
+          autoComplete="off"
+          // Focus lands here when someone taps Search; it is the only thing on the page to do.
+          autoFocus={!query}
+          defaultValue={query}
+          enterKeyHint="search"
+          name="q"
+          placeholder="Try 300 GSM, raglan, black…"
+          type="search"
+        />
+        <button type="submit">Search</button>
+      </form>
+      <ShopGrid products={products} searchQuery={query} title={query ? `“${query}”` : 'Everything'} />
+    </div>
   );
 }

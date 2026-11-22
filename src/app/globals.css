@@ -166,8 +166,14 @@
   --space-10: 128px;
   --section-y: clamp(56px, 8vw, 120px);
   --section-x: clamp(16px, 4vw, 56px);
-  --nav-height: 64px;
+  /* The nav floats as an island: a bar plus the gap above it. */
+  --nav-offset: 10px;
+  --nav-bar: 58px;
+  --nav-height: calc(var(--nav-offset) + var(--nav-bar));
   --container-max: 1440px;
+  /* Storefront content lines up with the floating nav. */
+  --page-max: 1240px;
+  --page-width: min(100%, calc(var(--page-max) + var(--section-x) * 2));
   --container-tight: 1100px;
   --container-narrow: 720px;
 
@@ -177,6 +183,8 @@
   --radius-md: 12px;
   --radius-lg: 16px;
   --radius-xl: 22px;
+  --radius-2xl: 28px;
+  --radius-3xl: 36px;
   --radius-full: 9999px;
   --control-h: 52px;
   --control-h-sm: 44px;
@@ -207,6 +215,19 @@ html {
   -webkit-tap-highlight-color: transparent;
 }
 
+/* Registered so the hero's colour glow can glide from one garment colour to the next. */
+@property --tint {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #8ea7e4;
+}
+
+@property --tint-ink {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #111111;
+}
+
 body {
   display: flex;
   min-height: 100vh;
@@ -214,9 +235,7 @@ body {
   flex-direction: column;
   margin: 0;
   overflow-x: clip;
-  background:
-    radial-gradient(60rem 30rem at 10% -10%, var(--bg-glow), transparent 70%),
-    var(--bg);
+  background: var(--bg);
   color: var(--fg);
   font-family: var(--font-body);
   font-size: var(--text-base);
@@ -225,19 +244,6 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
-}
-
-body::before {
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  content: '';
-  background-image:
-    linear-gradient(var(--grid-line) 1px, transparent 1px),
-    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
-  background-size: 64px 64px;
-  mask-image: linear-gradient(to bottom, black, transparent 70%);
 }
 
 /* Theme switch: a quick cross-fade on browsers without view transitions. */
@@ -500,7 +506,8 @@ p {
 
 @media (max-width: 700px) {
   :root {
-    --nav-height: 60px;
+    --nav-offset: 8px;
+    --nav-bar: 54px;
   }
 
   .pageHeader {

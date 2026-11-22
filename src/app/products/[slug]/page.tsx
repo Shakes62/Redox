@@ -62,11 +62,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
     description: product.description,
     sku: product.variants?.[0]?.sku || `RD-${product.id}`,
     brand: { '@type': 'Brand', name: 'REDOXDESIGNX' },
-    aggregateRating: {
-      '@type': 'AggregateRating',
-      ratingValue: product.rating,
-      reviewCount: product.reviewCount
-    },
+    // No aggregateRating: every product carries the same placeholder 4.8 / 24, and
+    // search engines penalise ratings that are not shown to, or given by, customers.
     offers: {
       '@type': 'Offer',
       priceCurrency: 'GHS',

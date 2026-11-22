@@ -5,17 +5,17 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { ThemeToggle } from '@/components/theme/ThemeToggle';
-import { BagIcon, ChevronRightIcon, HeartIcon, MenuIcon, SearchIcon, XIcon } from '@/components/ui/Icons';
+import { BagIcon, ChevronRightIcon, HeartIcon, MapPinIcon, MenuIcon, SearchIcon, WhatsappIcon, XIcon } from '@/components/ui/Icons';
+import { whatsappLink } from '@/lib/product-display';
 import { getCartTotals, useCartStore } from '@/store/cart.store';
 import { useWishlistStore } from '@/store/wishlist.store';
 import styles from './Navbar.module.css';
 
 const NAV_LINKS = [
   { href: '/shop', label: 'Shop' },
-  { href: '/track-order', label: 'Track Order' }
+  { href: '/track-order', label: 'Track order' },
+  { href: '/contact', label: 'Contact' }
 ];
-
-const MENU_LINKS = [...NAV_LINKS, { href: '/search', label: 'Search' }];
 
 export function Navbar() {
   const pathname = usePathname();
@@ -63,11 +63,64 @@ export function Navbar() {
 
   const isActive = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
 
+  const mobileLinks = [
+    ...NAV_LINKS,
+    { href: '/search', label: 'Search' },
+    { href: '/account/wishlist', label: wishlistCount > 0 ? `Saved · ${wishlistCount}` : 'Saved' }
+  ];
+
   return (
     <>
       <nav aria-label="Main navigation" className={`${styles.nav} ${scrolled || mobileOpen ? styles.navScrolled : ''}`}>
-        <div className={styles.inner}>
-          <div className={styles.left}>
+        <div className={styles.bar}>
+          <div className={styles.brand}>
+            <Link aria-label="REDOXDESIGNX home" className={styles.logo} href="/">
+              <Image alt="" className={styles.logoImg} height={42} src="/icon1?brand=2" unoptimized width={42} />
+            </Link>
+            <span className={styles.place}>
+              <MapPinIcon size={14} weight="fill" />
+              Accra
+            </span>
+          </div>
+
+          <div className={styles.links}>
+            {NAV_LINKS.map((link) => (
+              <Link
+                aria-current={isActive(link.href) ? 'page' : undefined}
+                className={`${styles.navLink} ${isActive(link.href) ? styles.navLinkActive : ''}`}
+                href={link.href}
+                key={link.href}
+              >
+                {link.label}
+              </Link>
+            ))}
+          </div>
+
+          <div className={styles.actions}>
+            <Link aria-label="Search" className={`${styles.iconButton} ${styles.desktopOnly}`} href="/search">
+              <SearchIcon size={21} />
+            </Link>
+            <Link
+              aria-label={`Saved: ${wishlistCount}`}
+              className={`${styles.iconButton} ${styles.desktopOnly}`}
+              href="/account/wishlist"
+            >
+              <HeartIcon size={21} weight={wishlistCount > 0 ? 'fill' : 'regular'} />
+              {wishlistCount > 0 && <span className={styles.dot}>{wishlistCount}</span>}
+            </Link>
+            <ThemeToggle />
+            <button
+              aria-label={`Bag: ${totalItems} ${totalItems === 1 ? 'item' : 'items'}`}
+              className={styles.bagButton}
+              onClick={openCart}
+              type="button"
+            >
+              <BagIcon size={19} weight="bold" />
+              <span className={styles.bagLabel}>Bag</span>
+              <span className={`${styles.bagCount} ${totalItems > 0 ? styles.bagCountFull : ''}`} key={totalItems}>
+                {totalItems}
+              </span>
+            </button>
             <button
               aria-controls="mobile-navigation"
               aria-expanded={mobileOpen}
@@ -78,51 +131,9 @@ export function Navbar() {
               type="button"
             >
               <span className={`${styles.menuIcon} ${mobileOpen ? styles.menuIconOpen : ''}`}>
-                <MenuIcon />
-                <XIcon />
+                <MenuIcon size={24} />
+                <XIcon size={24} />
               </span>
-            </button>
-
-            <div className={styles.links}>
-              {NAV_LINKS.map((link) => (
-                <Link
-                  aria-current={isActive(link.href) ? 'page' : undefined}
-                  className={`${styles.navLink} ${isActive(link.href) ? styles.navLinkActive : ''}`}
-                  href={link.href}
-                  key={link.href}
-                >
-                  {link.label}
-                </Link>
-              ))}
-            </div>
-          </div>
-
-          <Link aria-label="REDOXDESIGNX home" className={styles.logo} href="/">
-            <Image alt="" className={styles.logoImg} height={36} src="/icon1?brand=2" unoptimized width={36} />
-            <span className={styles.logoText}>REDOXDESIGNX</span>
-          </Link>
-
-          <div className={styles.actions}>
-            <Link aria-label="Search" className={`${styles.iconButton} ${styles.hideMobile}`} href="/search">
-              <SearchIcon />
-            </Link>
-            <ThemeToggle />
-            <Link aria-label={`Wishlist: ${wishlistCount} saved`} className={styles.iconButton} href="/account/wishlist">
-              <HeartIcon />
-              {wishlistCount > 0 && <span className={styles.count}>{wishlistCount}</span>}
-            </Link>
-            <button
-              aria-label={`Cart: ${totalItems} items`}
-              className={styles.iconButton}
-              onClick={openCart}
-              type="button"
-            >
-              <BagIcon />
-              {totalItems > 0 && (
-                <span className={styles.count} key={totalItems}>
-                  {totalItems}
-                </span>
-              )}
             </button>
           </div>
         </div>
@@ -141,19 +152,26 @@ export function Navbar() {
         inert={!mobileOpen}
         ref={mobilePanelRef}
       >
-        <div className={styles.mobilePanelInner}>
-          {MENU_LINKS.map((link, index) => (
-            <Link
-              className={`${styles.mobileLink} ${isActive(link.href) ? styles.mobileLinkActive : ''}`}
-              href={link.href}
-              key={link.href}
-              style={{ transitionDelay: mobileOpen ? `${60 + index * 35}ms` : '0ms' }}
-            >
-              <span>{link.label}</span>
-              <ChevronRightIcon className={styles.mobileLinkArrow} />
-            </Link>
-          ))}
-        </div>
+        {mobileLinks.map((link, index) => (
+          <Link
+            className={`${styles.mobileLink} ${isActive(link.href) ? styles.mobileLinkActive : ''}`}
+            href={link.href}
+            key={link.href}
+            style={{ transitionDelay: mobileOpen ? `${50 + index * 30}ms` : '0ms' }}
+          >
+            <span>{link.label}</span>
+            <ChevronRightIcon className={styles.mobileLinkArrow} />
+          </Link>
+        ))}
+        <a
+          className={styles.mobileWhatsapp}
+          href={whatsappLink('Hi REDOXDESIGNX, I have a question.')}
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          <WhatsappIcon size={22} />
+          Chat on WhatsApp
+        </a>
       </div>
     </>
   );

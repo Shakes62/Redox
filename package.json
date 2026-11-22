@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.1.0",
+    "@phosphor-icons/react": "^2.1.10",
     "cloudinary": "^2.10.0",
     "gsap": "^3.12.7",
     "next": "16.4.6",

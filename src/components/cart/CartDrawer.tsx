@@ -9,6 +9,7 @@ import { LinkButton } from '@/components/ui/LinkButton';
 import { CheckoutFlow } from '@/components/cart/CheckoutFlow';
 import { OrderReceipt, PendingNotice } from '@/components/cart/OrderReceipt';
 import { formatCurrency } from '@/lib/format';
+import { displayColorName, displayProductName } from '@/lib/product-display';
 import { getCartTotals, useCartStore } from '@/store/cart.store';
 import {
   effectiveUnitPrice,
@@ -60,7 +61,7 @@ export function CartDrawer() {
         if (needed <= 0) return byProduct;
         byProduct.set(item.productSlug, {
           slug: item.productSlug,
-          name: item.name,
+          name: displayProductName(item.name),
           needed,
           saving: savingIfUnlocked(item, inBag),
           rule: getWholesaleRule(item)
@@ -238,9 +239,9 @@ export function CartDrawer() {
             <div className={styles.scroll}>
               {items.length === 0 ? (
                 <div className={styles.empty}>
-                  <h3>No pieces selected</h3>
-                  <p>Limited runs move fast and do not restock. Build the uniform.</p>
-                  <LinkButton href="/shop" onClick={closeCart} size="lg">View shop</LinkButton>
+                  <h3>Your bag is empty</h3>
+                  <p>Pick a colour, tap a size, done.</p>
+                  <LinkButton href="/shop" onClick={closeCart} size="lg">Start shopping</LinkButton>
                 </div>
               ) : (
                 <ul className={styles.items}>
@@ -251,15 +252,15 @@ export function CartDrawer() {
                     return (
                       <li className={styles.item} key={item.variantId}>
                         <Link className={styles.imageWrap} href={`/products/${item.productSlug}`} onClick={closeCart}>
-                          <Image alt={item.name} className={styles.image} fill sizes="88px" src={item.image} />
+                          <Image alt={displayProductName(item.name)} className={styles.image} fill sizes="88px" src={item.image} />
                         </Link>
                         <div className={styles.itemBody}>
                           <div className={styles.itemTop}>
                             <Link className={styles.itemName} href={`/products/${item.productSlug}`} onClick={closeCart}>
-                              {item.name}
+                              {displayProductName(item.name)}
                             </Link>
                             <button
-                              aria-label={`Remove ${item.name}`}
+                              aria-label={`Remove ${displayProductName(item.name)}`}
                               className={styles.removeButton}
                               onClick={() => removeItem(item.variantId)}
                               type="button"
@@ -267,14 +268,14 @@ export function CartDrawer() {
                               <TrashIcon height={18} width={18} />
                             </button>
                           </div>
-                          <p className={styles.meta}>{item.color} · Size {item.size}</p>
+                          <p className={styles.meta}>{displayColorName(item.color)} · {item.size.toUpperCase() === 'QTY' ? 'One size' : `Size ${item.size}`}</p>
                           <div className={styles.itemBottom}>
                             {/* The old price stays visible beside the bulk one, so the change reads as a saving. */}
                             <p className={styles.price}>
                               {bulk && <span className={styles.priceWas}>{formatCurrency(item.price)}</span>}
                               <span className={bulk ? styles.priceBulk : undefined}>{formatCurrency(effectiveUnitPrice(item, inBag))}</span>
                             </p>
-                            <div aria-label={`Quantity for ${item.name}`} className={styles.stepper} role="group">
+                            <div aria-label={`Quantity for ${displayProductName(item.name)}`} className={styles.stepper} role="group">
                               <button
                                 aria-label="Decrease quantity"
                                 disabled={item.quantity <= 1}
