@@ -7,12 +7,16 @@ import type { OrderPaymentSummary } from '@/lib/order-receipt';
 import type { WaitlistSignup } from '@/lib/catalog-db';
 import { formatCurrency } from '@/lib/format';
 import { describeDelivery, FREE_STATION_DELIVERY_LABEL, URGENT_STATION_DELIVERY_LABEL } from '@/lib/delivery';
-import { getProductStockSummary } from '@/lib/inventory';
+import { getProductStockSummary, visibleProducts } from '@/lib/inventory';
 import { sumOrderExtras } from '@/lib/order-schema';
 import { formatAdminDateTime, revenueForRange, type RevenueRange } from '@/lib/admin-metrics';
+import { AUTO_DELIVER_AFTER_HOURS, autoDeliveryDueAt, formatTimeLeft, isAutoDeliveryDue } from '@/lib/auto-delivery';
+import { pickHeroProduct } from '@/lib/hero-product';
+import { moveToFront } from '@/lib/product-order';
 import { CreateOrderModal, type CreatedOrderResult } from './CreateOrderModal';
 import { SmsOrderEditor } from './SmsOrderEditor';
 import { DeliverySettingsPanel } from './DeliverySettingsPanel';
+import { ProductOrderPanel } from './ProductOrderPanel';
 import styles from './Admin.module.css';
 
 interface AdminDashboardProps {
@@ -333,7 +337,12 @@ export function AdminDashboard({
   const [showCollectionModal, setShowCollectionModal] = useState(false);
   const [showLookbookModal, setShowLookbookModal] = useState(false);
   const [detailProduct, setDetailProduct] = useState<Product | null>(null);
-  
+  /** Shop-order mode: the product grid is swapped for the drag-to-arrange list. */
+  const [isArrangingProducts, setIsArrangingProducts] = useState(false);
+  const [isSavingProductOrder, setIsSavingProductOrder] = useState(false);
+  // The same rule the homepage uses, so the tag always names the real hero.
+  const heroProductId = useMemo(() => pickHeroProduct(visibleProducts(products))?.id ?? null, [products]);
+
   // Notification State
   const [notification, setNotification] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
@@ -667,6 +676,55 @@ export function AdminDashboard({
     };
   };
 
+  /**
+   * Saves the shop order. `ids[0]` shows first on the homepage, shop and search.
+   * Returns whether it stuck, so callers only celebrate a real save.
+   */
+  const saveProductOrder = async (ids: string[]): Promise<boolean> => {
+    const byId = new Map(products.map((product) => [product.id, product]));
+    const reordered = [
+      ...ids.flatMap((id) => byId.get(id) ?? []),
+      ...products.filter((product) => !ids.includes(product.id))
+    ];
+
+    if (!isDbConnected) {
+      setProducts(reordered);
+      return true;
+    }
+
+    setIsSavingProductOrder(true);
+    try {
+      const response = await fetch('/api/admin/products/order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ order: ids })
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(data.error || 'Could not save the shop order.');
+      setProducts(Array.isArray(data.products) ? data.products : reordered);
+      return true;
+    } catch (err: any) {
+      triggerNotification(err.message || 'Could not save the shop order.', 'error');
+      return false;
+    } finally {
+      setIsSavingProductOrder(false);
+    }
+  };
+
+  const handleSaveArrangedOrder = async (ids: string[]) => {
+    if (await saveProductOrder(ids)) {
+      setIsArrangingProducts(false);
+      triggerNotification(isDbConnected ? 'Shop order saved. The site shows it now.' : 'Sandbox Mode: Shop order updated in-memory.', 'success');
+    }
+  };
+
+  const handleMoveProductToFront = async (product: Product) => {
+    const ids = moveToFront(products.map((item) => item.id), product.id);
+    if (await saveProductOrder(ids)) {
+      triggerNotification(`"${product.name}" now shows first in the shop.`, 'success');
+    }
+  };
+
   const handleDeleteProduct = async (product: Product) => {
     if (!window.confirm(`Permanently delete "${product.name}" from the product catalog?`)) return;
 
@@ -703,6 +761,18 @@ export function AdminDashboard({
     const timer = window.setInterval(() => setReportNow(new Date()), 60_000);
     return () => window.clearInterval(timer);
   }, []);
+
+  // When an order's 24 hours run out while the panel is open, reload so it
+  // shows as Delivered without the merchant pressing anything. Spaced two
+  // minutes apart, so a phone clock that runs ahead cannot cause a reload loop.
+  const lastDueDeliveryRefresh = useRef(0);
+  useEffect(() => {
+    if (!ordersLoaded || !orders.some((order) => isAutoDeliveryDue(order, reportNow))) return;
+    if (Date.now() - lastDueDeliveryRefresh.current < 120_000) return;
+    lastDueDeliveryRefresh.current = Date.now();
+    void refreshOrders({ silent: true });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [orders, ordersLoaded, reportNow]);
 
   // The green flash on a freshly created order is a "here it is" cue, not a
   // permanent state — leave it up and the table slowly fills with them.
@@ -1603,7 +1673,18 @@ export function AdminDashboard({
         <div>
           <div className={styles.sectionHeader}>
             <h2 className={styles.sectionTitle}>Product Catalog</h2>
-            <button 
+            <div className={styles.productHeaderActions}>
+            {products.length > 1 && !isArrangingProducts && (
+              <button
+                className={styles.arrangeButton}
+                onClick={() => setIsArrangingProducts(true)}
+                title="Choose which products show first on the site"
+                type="button"
+              >
+                ⇅ Arrange shop order
+              </button>
+            )}
+            <button
               className={styles.saveButton}
               onClick={() => {
                 setProductForm({
@@ -1639,15 +1720,25 @@ export function AdminDashboard({
             >
               + Create Product
             </button>
+            </div>
           </div>
 
+          {isArrangingProducts ? (
+            <ProductOrderPanel
+              onCancel={() => setIsArrangingProducts(false)}
+              onSave={handleSaveArrangedOrder}
+              products={products}
+              saving={isSavingProductOrder}
+            />
+          ) : (
           <div className={styles.grid}>
-            {products.map((p) => {
+            {products.map((p, index) => {
               const stock = getProductStockSummary(p);
 
               return (
               <article className={styles.card} key={p.id}>
                 {p.badge && <span className={styles.cardBadge}>{p.badge}</span>}
+                <span className={styles.cardPosition} title="Place in the shop order">#{index + 1}</span>
                 <div className={styles.cardImageContainer}>
                   <Image 
                     src={p.image} 
@@ -1663,6 +1754,11 @@ export function AdminDashboard({
                   <div className={styles.stockPills}>
                     {/* Two independent facts: whether the site shows it, and
                         whether there is anything left to sell. */}
+                    {p.id === heroProductId && (
+                      <span className={styles.stockPillHero} title="Leads the homepage: first product in the shop order with 2+ colour photos in stock">
+                        ★ Homepage hero
+                      </span>
+                    )}
                     {p.visibility === 'hidden' && (
                       <span className={styles.stockPillHidden}>⊘ Hidden from site</span>
                     )}
@@ -1723,12 +1819,22 @@ export function AdminDashboard({
                         <span className={styles.actionIcon}>✕</span> Delete
                       </button>
                     </div>
+                    <button
+                      className={styles.cardFrontButton}
+                      disabled={index === 0 || isSavingProductOrder}
+                      onClick={() => handleMoveProductToFront(p)}
+                      title={index === 0 ? 'Already first in the shop' : 'Show this product first on the site'}
+                      type="button"
+                    >
+                      {index === 0 ? '★ First in shop' : '⤒ Move to front'}
+                    </button>
                   </div>
                 </div>
               </article>
               );
             })}
           </div>
+          )}
         </div>
       )}
 
@@ -2211,6 +2317,29 @@ export function AdminDashboard({
                           <option value="Cancelled" style={{ background: '#111', color: '#ef4444' }}>Cancelled</option>
                           <option value="Payment Failed" style={{ background: '#111', color: '#ef4444' }}>Payment Failed</option>
                         </select>
+
+                        {(() => {
+                          const dueAt = autoDeliveryDueAt(o);
+                          if (dueAt) {
+                            const left = dueAt.getTime() - reportNow.getTime();
+                            return (
+                              <div
+                                className={styles.autoDeliverNote}
+                                title={`Marked Delivered on its own ${AUTO_DELIVER_AFTER_HOURS}h after it went into Processing or Shipped · ${formatAdminDateTime(dueAt.toISOString())}`}
+                              >
+                                {left > 0 ? `Auto-delivers in ${formatTimeLeft(left)}` : 'Marking delivered…'}
+                              </div>
+                            );
+                          }
+                          if (o.status === 'Delivered' && o.autoDeliveredAt) {
+                            return (
+                              <div className={styles.autoDeliveredNote} title="Marked Delivered automatically">
+                                ✓ Auto · {formatAdminDateTime(o.autoDeliveredAt)}
+                              </div>
+                            );
+                          }
+                          return null;
+                        })()}
 
                         {o.status === 'Shipped' && !o.shippedSmsSent && (
                           <button

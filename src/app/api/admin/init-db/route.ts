@@ -42,6 +42,7 @@ export async function POST() {
         review_count INTEGER NOT NULL,
         color_images JSONB DEFAULT '{}'::jsonb,
         visibility VARCHAR(20) NOT NULL DEFAULT 'visible',
+        sort_order INTEGER,
         created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
       );
     `;
@@ -125,6 +126,9 @@ export async function POST() {
         delivery_method VARCHAR(20) NOT NULL DEFAULT 'none',
         delivery_fee NUMERIC(10, 2) NOT NULL DEFAULT 0,
         created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+        -- 24-hour auto-delivery clock. See src/lib/auto-delivery.ts.
+        fulfilment_started_at TIMESTAMP WITH TIME ZONE,
+        auto_delivered_at TIMESTAMP WITH TIME ZONE,
 
         -- Payment ledger. Money state is tracked separately from the fulfilment
         -- status so a dropped connection after payment can never be mistaken

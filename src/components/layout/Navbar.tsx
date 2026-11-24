@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { ThemeToggle } from '@/components/theme/ThemeToggle';
-import { BagIcon, ChevronRightIcon, HeartIcon, MapPinIcon, MenuIcon, SearchIcon, WhatsappIcon, XIcon } from '@/components/ui/Icons';
+import { BagIcon, ChevronRightIcon, HeartIcon, MenuIcon, SearchIcon, WhatsappIcon, XIcon } from '@/components/ui/Icons';
 import { whatsappLink } from '@/lib/product-display';
 import { getCartTotals, useCartStore } from '@/store/cart.store';
 import { useWishlistStore } from '@/store/wishlist.store';
@@ -77,10 +77,6 @@ export function Navbar() {
             <Link aria-label="REDOXDESIGNX home" className={styles.logo} href="/">
               <Image alt="" className={styles.logoImg} height={42} src="/icon1?brand=2" unoptimized width={42} />
             </Link>
-            <span className={styles.place}>
-              <MapPinIcon size={14} weight="fill" />
-              Accra
-            </span>
           </div>
 
           <div className={styles.links}>

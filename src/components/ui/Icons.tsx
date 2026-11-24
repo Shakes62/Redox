@@ -4,7 +4,9 @@ import type { IconProps as PhosphorProps } from '@phosphor-icons/react/dist/lib/
 // components alike, and only the icons named here end up in the bundle.
 import { ArrowCounterClockwise } from '@phosphor-icons/react/dist/ssr/ArrowCounterClockwise';
 import { ArrowDown } from '@phosphor-icons/react/dist/ssr/ArrowDown';
+import { ArrowLineUp } from '@phosphor-icons/react/dist/ssr/ArrowLineUp';
 import { ArrowRight } from '@phosphor-icons/react/dist/ssr/ArrowRight';
+import { ArrowUp } from '@phosphor-icons/react/dist/ssr/ArrowUp';
 import { ArrowUpRight } from '@phosphor-icons/react/dist/ssr/ArrowUpRight';
 import { BaseballCap } from '@phosphor-icons/react/dist/ssr/BaseballCap';
 import { CaretDown } from '@phosphor-icons/react/dist/ssr/CaretDown';
@@ -13,6 +15,7 @@ import { CaretRight } from '@phosphor-icons/react/dist/ssr/CaretRight';
 import { Check } from '@phosphor-icons/react/dist/ssr/Check';
 import { Copy } from '@phosphor-icons/react/dist/ssr/Copy';
 import { DeviceMobile } from '@phosphor-icons/react/dist/ssr/DeviceMobile';
+import { DotsSixVertical } from '@phosphor-icons/react/dist/ssr/DotsSixVertical';
 import { Envelope } from '@phosphor-icons/react/dist/ssr/Envelope';
 import { Handbag } from '@phosphor-icons/react/dist/ssr/Handbag';
 import { Heart } from '@phosphor-icons/react/dist/ssr/Heart';
@@ -89,6 +92,9 @@ export const ShieldIcon = phosphor(ShieldCheck, 'ShieldIcon');
 
 // ── Storefront ─────────────────────────────────────────────
 export const ArrowDownIcon = phosphor(ArrowDown, 'ArrowDownIcon', { weight: 'bold' });
+export const ArrowUpIcon = phosphor(ArrowUp, 'ArrowUpIcon', { weight: 'bold' });
+export const ToTopIcon = phosphor(ArrowLineUp, 'ToTopIcon', { weight: 'bold' });
+export const DragHandleIcon = phosphor(DotsSixVertical, 'DragHandleIcon', { weight: 'bold' });
 export const ArrowUpRightIcon = phosphor(ArrowUpRight, 'ArrowUpRightIcon', { weight: 'bold' });
 export const TShirtIcon = phosphor(TShirt, 'TShirtIcon');
 export const CapIcon = phosphor(BaseballCap, 'CapIcon');

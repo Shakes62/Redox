@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import type { CSSProperties } from 'react';
-import { InstagramIcon, MapPinIcon, TiktokIcon, WhatsappIcon } from '@/components/ui/Icons';
+import { InstagramIcon, TiktokIcon, WhatsappIcon } from '@/components/ui/Icons';
 import { whatsappLink } from '@/lib/product-display';
 import { InstallApp } from './InstallApp';
 import styles from './Footer.module.css';
@@ -27,12 +27,7 @@ export function Footer() {
         <div className={styles.top}>
           <div className={styles.brand}>
             <Image alt="" className={styles.mark} height={52} src="/icon1?brand=2" unoptimized width={52} />
-            <p className={styles.tagline}>
-              Blank apparel &amp; custom print.
-              <span>
-                <MapPinIcon size={15} weight="fill" /> Amasaman, Accra
-              </span>
-            </p>
+            <p className={styles.tagline}>Blank apparel &amp; custom print.</p>
           </div>
 
           <nav aria-label="Footer" className={styles.links}>

@@ -5,7 +5,8 @@ import { Steps } from '@/components/home/Steps';
 import { TypeTiles, type TypeTile } from '@/components/home/TypeTiles';
 import { WeightScale, type WeightItem } from '@/components/home/WeightScale';
 import { getVisibleDbProducts } from '@/lib/catalog-db';
-import { getProductStockSummary, isVariantInStock } from '@/lib/inventory';
+import { MAX_HERO_LOOKS, pickHeroProduct, stockedColors } from '@/lib/hero-product';
+import { getProductStockSummary } from '@/lib/inventory';
 import {
   KIND_LABELS,
   kindsIn,
@@ -25,38 +26,6 @@ import type { Product } from '@/types/product';
 
 export const dynamic = 'force-dynamic';
 
-const MAX_LOOKS = 8;
-
-/** Colours with their own photo and at least one size left: the ones worth sending people to. */
-function stockedColors(product: Product) {
-  return colorsWithPhotos(product).filter((color) =>
-    (product.variants || []).some((variant) => variant.color === color && isVariantInStock(variant))
-  );
-}
-
-/**
- * The shirt with the most colours people can actually buy leads the hero.
- * Caps count half: a tee says "apparel" faster. If stock is thin everywhere,
- * the shirt with the most colour photos leads instead.
- */
-function pickHeroProduct(products: Product[]) {
-  const best = (colorsOf: (product: Product) => string[]) => {
-    let winner: Product | null = null;
-    let winnerScore = 1;
-    for (const product of products) {
-      if (getProductStockSummary(product).isSoldOut) continue;
-      // Only the first eight colours are shown, so more than that earns nothing extra.
-      const score = Math.min(colorsOf(product).length, MAX_LOOKS) * (productKind(product) === 'caps' ? 0.5 : 1);
-      if (score > winnerScore) {
-        winner = product;
-        winnerScore = score;
-      }
-    }
-    return winner;
-  };
-  return best(stockedColors) || best(colorsWithPhotos);
-}
-
 function heroLooks(product: Product | null): HeroLook[] {
   if (!product) return [];
   const stocked = stockedColors(product);
@@ -65,7 +34,7 @@ function heroLooks(product: Product | null): HeroLook[] {
 
 function toLooks(product: Product, colors: string[]): HeroLook[] {
   return colors
-    .slice(0, MAX_LOOKS)
+    .slice(0, MAX_HERO_LOOKS)
     .map((color) => {
       const tint = colorTones(color, product.colorHex?.[color])[0] || '#cc2131';
       return {
@@ -132,6 +101,7 @@ function printShots(looks: HeroLook[]): PrintShot[] {
 }
 
 export default async function HomePage() {
+  // Already in the admin's shop order, so everything below follows it.
   const products = await getVisibleDbProducts();
   const featured = pickHeroProduct(products);
   const looks = heroLooks(featured);

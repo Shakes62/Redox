@@ -1,0 +1,38 @@
+{
+  "_note": "Written by scripts/vo.py for the \"redox\" film. Scene lengths are DESIGN frames; fps, speed and transition come from src/timing.json.",
+  "fps": 30,
+  "speed": 1.3,
+  "transition": 15,
+  "order": [
+    "intro",
+    "weights",
+    "range",
+    "quality",
+    "howto",
+    "colour",
+    "size",
+    "details",
+    "delivery",
+    "pay",
+    "placed",
+    "ship",
+    "trust",
+    "end"
+  ],
+  "dur": {
+    "intro": 291,
+    "weights": 358,
+    "range": 289,
+    "quality": 389,
+    "howto": 150,
+    "colour": 179,
+    "size": 266,
+    "details": 294,
+    "delivery": 280,
+    "pay": 294,
+    "placed": 299,
+    "ship": 393,
+    "trust": 255,
+    "end": 252
+  }
+}

@@ -2007,3 +2007,110 @@
   .adminContainer, .notification, .modalOverlay, .statusBadgeMissing { animation: none; }
   .card, .cardImage, .saveButton, .tab { transition: none; }
 }
+
+/* --- Shop order ------------------------------------------------ */
+.productHeaderActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.arrangeButton {
+  padding: 12px var(--space-5);
+  border: 1px solid rgba(215, 38, 56, 0.5);
+  border-radius: 4px;
+  background: rgba(215, 38, 56, 0.1);
+  color: #ff8a94;
+  font-family: var(--font-mono), monospace;
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-out);
+}
+
+.arrangeButton:hover {
+  background: rgba(215, 38, 56, 0.2);
+  border-color: rgba(215, 38, 56, 0.8);
+  color: #fff;
+}
+
+/* Place in the shop order, on the photo's top-right corner. */
+.cardPosition {
+  position: absolute;
+  top: var(--space-3);
+  right: var(--space-3);
+  z-index: 2;
+  min-width: 34px;
+  padding: 4px 8px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 3px;
+  background: rgba(0, 0, 0, 0.72);
+  color: #fff;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.stockPillHero {
+  display: inline-block;
+  padding: 3px 8px;
+  border: 1px solid rgba(215, 38, 56, 0.5);
+  border-radius: 3px;
+  background: rgba(215, 38, 56, 0.14);
+  color: #ff8a94;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.cardFrontButton {
+  width: 100%;
+  min-height: 36px;
+  padding: 8px 10px;
+  border: 1px solid rgba(215, 38, 56, 0.4);
+  border-radius: 5px;
+  background: rgba(215, 38, 56, 0.08);
+  color: #ff8a94;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-out);
+}
+
+.cardFrontButton:hover:not(:disabled) {
+  background: rgba(215, 38, 56, 0.2);
+  border-color: rgba(215, 38, 56, 0.75);
+  color: #fff;
+}
+
+.cardFrontButton:disabled {
+  border-color: rgba(255, 255, 255, 0.08);
+  background: transparent;
+  color: #777;
+  cursor: default;
+}
+
+/* --- Automatic delivery ---------------------------------------- */
+.autoDeliverNote,
+.autoDeliveredNote {
+  max-width: 150px;
+  margin-top: 6px;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.66rem;
+  line-height: 1.4;
+}
+
+.autoDeliverNote {
+  color: #9ca3af;
+}
+
+.autoDeliveredNote {
+  color: #10b981;
+}

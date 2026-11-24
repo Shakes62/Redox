@@ -1,0 +1,1886 @@
+{
+ "_note": "Written by scripts/photos.mjs from the live catalogue (visible products only). Do not edit by hand.",
+ "taken": "2026-11-23",
+ "products": [
+  {
+   "id": "SUMMER PATCH TEE",
+   "slug": "summertee",
+   "name": "SUMMER PATCH TEE",
+   "category": "short sleeve ",
+   "description": "summer patch cotton tshirt",
+   "material": "100% cotton",
+   "fit": "Boxy fit, true to size",
+   "price": 95,
+   "wholesale": {
+    "minQuantity": 10,
+    "unitPrice": 90
+   },
+   "colors": [
+    "BLACK/WHITE",
+    "GREY/BLACK",
+    "WHITE/BLACK",
+    "WHITE/BLUE"
+   ],
+   "colorHex": {
+    "GREY/BLACK": "#555555",
+    "WHITE/BLUE": "#555555",
+    "BLACK/WHITE": "#555555",
+    "WHITE/BLACK": "#555555"
+   },
+   "sizes": [
+    "L",
+    "XL",
+    "XXL"
+   ],
+   "cover": "photos/summertee/cover.jpg",
+   "photos": {
+    "BLACK/WHITE": "photos/summertee/0.jpg",
+    "GREY/BLACK": "photos/summertee/1.jpg",
+    "WHITE/BLACK": "photos/summertee/2.jpg",
+    "WHITE/BLUE": "photos/summertee/3.jpg"
+   }
+  },
+  {
+   "id": "TRACKER CAPS",
+   "slug": "trackercaps",
+   "name": "TRACKER CAPS",
+   "category": "cap",
+   "description": "COLORFUL CAPS",
+   "material": "CAP ",
+   "fit": "Boxy fit, true to size",
+   "price": 22,
+   "wholesale": {
+    "minQuantity": 10,
+    "unitPrice": 19
+   },
+   "colors": [
+    "BLACK",
+    "BLACK/WHITE",
+    "RED",
+    "BROWN",
+    "GREY/BLACK",
+    "SKY BLUE",
+    "NAVY BLUE/WHITE",
+    "LIGHT GREY/WHITE",
+    "PINK",
+    "WHITE",
+    "PINK/WHITE",
+    "BLUE/WHITE",
+    "GREEN/WHITE",
+    "PINK/BLACK",
+    "PURPLE/WHITE",
+    "LIGHT GREEN/WHITE",
+    "RED/WHITE",
+    "LIGHT GREY",
+    "BLACK/RED"
+   ],
+   "colorHex": {
+    "RED": "#555555",
+    "PINK": "#555555",
+    "BLACK": "#555555",
+    "BROWN": "#555555",
+    "WHITE": "#555555",
+    "SKY BLUE": "#555555",
+    "BLACK/RED": "#555555",
+    "RED/WHITE": "#555555",
+    "BLUE/WHITE": "#555555",
+    "GREY/BLACK": "#555555",
+    "LIGHT GREY": "#555555",
+    "PINK/BLACK": "#555555",
+    "PINK/WHITE": "#555555",
+    "BLACK/WHITE": "#555555",
+    "GREEN/WHITE": "#555555",
+    "PURPLE/WHITE": "#555555",
+    "NAVY BLUE/WHITE": "#555555",
+    "LIGHT GREY/WHITE": "#555555",
+    "LIGHT GREEN/WHITE": "#555555"
+   },
+   "sizes": [
+    "QTY"
+   ],
+   "cover": "photos/trackercaps/cover.jpg",
+   "photos": {
+    "BLACK": "photos/trackercaps/0.jpg",
+    "BLACK/WHITE": "photos/trackercaps/1.jpg",
+    "RED": "photos/trackercaps/2.jpg",
+    "BROWN": "photos/trackercaps/3.jpg",
+    "GREY/BLACK": "photos/trackercaps/4.jpg",
+    "SKY BLUE": "photos/trackercaps/5.jpg",
+    "NAVY BLUE/WHITE": "photos/trackercaps/6.jpg",
+    "LIGHT GREY/WHITE": "photos/trackercaps/7.jpg",
+    "PINK": "photos/trackercaps/8.jpg",
+    "WHITE": "photos/trackercaps/9.jpg",
+    "PINK/WHITE": "photos/trackercaps/10.jpg",
+    "BLUE/WHITE": "photos/trackercaps/11.jpg",
+    "GREEN/WHITE": "photos/trackercaps/12.jpg",
+    "PINK/BLACK": "photos/trackercaps/13.jpg",
+    "PURPLE/WHITE": "photos/trackercaps/14.jpg",
+    "LIGHT GREEN/WHITE": "photos/trackercaps/15.jpg",
+    "RED/WHITE": "photos/trackercaps/16.jpg",
+    "LIGHT GREY": "photos/trackercaps/17.jpg",
+    "BLACK/RED": "photos/trackercaps/18.jpg"
+   }
+  },
+  {
+   "id": "RAGLAN LONG SLEEVE",
+   "slug": "longsleevereaglan240gsm",
+   "name": "RAGLAN LONG SLEEVE 240GSM",
+   "category": "long sleeve",
+   "description": "RAGLAN 240GSM LONG SLEEVE",
+   "material": "100% cotton",
+   "fit": "Boxy fit, true to size",
+   "price": 90,
+   "wholesale": {
+    "minQuantity": 10,
+    "unitPrice": 85
+   },
+   "colors": [
+    "BLACK/WHITE",
+    "BROWN/WHITE",
+    "GREEN/WHITE",
+    "GREEN/CREAM",
+    "BLACK/GREY"
+   ],
+   "colorHex": {
+    "BLACK/GREY": "#555555",
+    "BLACK/WHITE": "#555555",
+    "BROWN/WHITE": "#555555",
+    "GREEN/CREAM": "#555555",
+    "GREEN/WHITE": "#555555"
+   },
+   "sizes": [
+    "L",
+    "XL",
+    "XXL"
+   ],
+   "cover": "photos/longsleevereaglan240gsm/cover.jpg",
+   "photos": {
+    "BLACK/WHITE": "photos/longsleevereaglan240gsm/0.jpg",
+    "BROWN/WHITE": "photos/longsleevereaglan240gsm/1.jpg",
+    "GREEN/WHITE": "photos/longsleevereaglan240gsm/2.jpg",
+    "GREEN/CREAM": "photos/longsleevereaglan240gsm/3.jpg",
+    "BLACK/GREY": "photos/longsleevereaglan240gsm/4.jpg"
+   }
+  },
+  {
+   "id": "LONG SLEEVE 240GSM",
+   "slug": "longsleeve240gsm",
+   "name": "LONG SLEEVE 240GSM",
+   "category": "long sleeve",
+   "description": "LONG SLEEVE 240GSM",
+   "material": "100% cotton",
+   "fit": "Boxy fit, true to size",
+   "price": 75,
+   "wholesale": null,
+   "colors": [
+    "BLACK",
+    "WHITE",
+    "WINE",
+    "CREAM"
+   ],
+   "colorHex": {
+    "WINE": "#555555",
+    "BLACK": "#555555",
+    "CREAM": "#555555",
+    "WHITE": "#555555"
+   },
+   "sizes": [
+    "L",
+    "XL",
+    "XXL",
+    "3XL",
+    "M",
+    "4XL"
+   ],
+   "cover": "photos/longsleeve240gsm/cover.jpg",
+   "photos": {
+    "BLACK": "photos/longsleeve240gsm/0.jpg",
+    "WHITE": "photos/longsleeve240gsm/1.jpg",
+    "WINE": "photos/longsleeve240gsm/2.jpg",
+    "CREAM": "photos/longsleeve240gsm/3.jpg"
+   }
+  },
+  {
+   "id": "260GSM RAGLAN ",
+   "slug": "260gsmraglantee",
+   "name": "260GSM RAGLAN ",
+   "category": "shoot sleeve",
+   "description": "260GSM COTTEN RAGLAN",
+   "material": "100% compact cotton",
+   "fit": "Boxy fit, true to size",
+   "price": 90,
+   "wholesale": {
+    "minQuantity": 10,
+    "unitPrice": 85
+   },
+   "colors": [
+    "BLACK/WHITE",
+    "BLACK/GREY",
+    "BLUE/CREAM",
+    "RED/CREAM",
+    "PINK/ CREAM"
+   ],
+   "colorHex": {
+    "RED/CREAM": "#555555",
+    "BLACK/GREY": "#555555",
+    "BLUE/CREAM": "#555555",
+    "BLACK/WHITE": "#555555",
+    "PINK/ CREAM": "#555555"
+   },
+   "sizes": [
+    "M",
+    "L",
+    "XL",
+    "XXL"
+   ],
+   "cover": "photos/260gsmraglantee/cover.jpg",
+   "photos": {
+    "BLACK/WHITE": "photos/260gsmraglantee/0.jpg",
+    "BLACK/GREY": "photos/260gsmraglantee/1.jpg",
+    "BLUE/CREAM": "photos/260gsmraglantee/2.jpg",
+    "RED/CREAM": "photos/260gsmraglantee/3.jpg",
+    "PINK/ CREAM": "photos/260gsmraglantee/4.jpg"
+   }
+  },
+  {
+   "id": "230gsm",
+   "slug": "230gsmplaintshirt",
+   "name": "230gsm PLAIN TSHIRT ",
+   "category": "230gsm",
+   "description": "230GSM HEAVY COTTON TSHIRT",
+   "material": "100% compact cotton",
+   "fit": "Boxy fit, true to size",
+   "price": 55,
+   "wholesale": {
+    "minQuantity": 10,
+    "unitPrice": 48
+   },
+   "colors": [
+    "BLACK",
+    "WHITE",
+    "CREAM",
+    "SEA BLUE",
+    "DARK GREY",
+    "PINK",
+    "WINE",
+    "Green"
+   ],
+   "colorHex": {
+    "PINK": "#555555",
+    "WINE": "#555555",
+    "BLACK": "#555555",
+    "CREAM": "#555555",
+    "Green": "#555555",
+    "WHITE": "#555555",
+    "SEA BLUE": "#555555",
+    "DARK GREY": "#555555"
+   },
+   "sizes": [
+    "M",
+    "L",
+    "3XL",
+    "XL",
+    "2XL"
+   ],
+   "cover": "photos/230gsmplaintshirt/cover.jpg",
+   "photos": {
+    "BLACK": "photos/230gsmplaintshirt/0.jpg",
+    "WHITE": "photos/230gsmplaintshirt/1.jpg",
+    "CREAM": "photos/230gsmplaintshirt/2.jpg",
+    "SEA BLUE": "photos/230gsmplaintshirt/3.jpg",
+    "DARK GREY": "photos/230gsmplaintshirt/4.jpg",
+    "PINK": "photos/230gsmplaintshirt/5.jpg",
+    "WINE": "photos/230gsmplaintshirt/6.jpg",
+    "Green": "photos/230gsmplaintshirt/7.jpg"
+   }
+  },
+  {
+   "id": "REGLAN",
+   "slug": "reglantshirt",
+   "name": "REGLAN 240GSM",
+   "category": "240gsm",
+   "description": "240GSM TWO COLORED TSHIRT",
+   "material": "100% compact cotton",
+   "fit": "Boxy fit, true to size",
+   "price": 80,
+   "wholesale": {
+    "minQuantity": 10,
+    "unitPrice": 75
+   },
+   "colors": [
+    "BLACK/WHITE",
+    "GREEN/WHITE",
+    "BROWN/WHITE",
+    "N-BLUE/WHITE",
+    "BLACK/GREY",
+    "GREY/WHITE"
+   ],
+   "colorHex": {
+    "BLACK/GREY": "#555555",
+    "GREY/WHITE": "#555555",
+    "BLACK/WHITE": "#555555",
+    "BROWN/WHITE": "#555555",
+    "GREEN/WHITE": "#555555",
+    "N-BLUE/WHITE": "#555555"
+   },
+   "sizes": [
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL"
+   ],
+   "cover": "photos/reglantshirt/cover.jpg",
+   "photos": {
+    "BLACK/WHITE": "photos/reglantshirt/0.jpg",
+    "GREEN/WHITE": "photos/reglantshirt/1.jpg",
+    "BROWN/WHITE": "photos/reglantshirt/2.jpg",
+    "N-BLUE/WHITE": "photos/reglantshirt/3.jpg",
+    "BLACK/GREY": "photos/reglantshirt/4.jpg",
+    "GREY/WHITE": "photos/reglantshirt/5.jpg"
+   }
+  },
+  {
+   "id": "t",
+   "slug": "320gsmheavytshirt",
+   "name": "320gsm PLAIN TSHIRT",
+   "category": "blanks",
+   "description": "HEAVY 320 GSM PLAIN TSHIRT",
+   "material": "100% compact cotton",
+   "fit": "Boxy fit, true to size",
+   "price": 90,
+   "wholesale": {
+    "minQuantity": 10,
+    "unitPrice": 85
+   },
+   "colors": [
+    "BLACK",
+    "WHITE",
+    "CREAM",
+    "PINK",
+    "GREY",
+    "BRWON"
+   ],
+   "colorHex": {
+    "GREY": "#555555",
+    "PINK": "#555555",
+    "BLACK": "#555555",
+    "BRWON": "#555555",
+    "CREAM": "#555555",
+    "WHITE": "#555555"
+   },
+   "sizes": [
+    "M",
+    "L",
+    "XL",
+    "S",
+    "2XL"
+   ],
+   "cover": "photos/320gsmheavytshirt/cover.jpg",
+   "photos": {
+    "BLACK": "photos/320gsmheavytshirt/0.jpg",
+    "WHITE": "photos/320gsmheavytshirt/1.jpg",
+    "CREAM": "photos/320gsmheavytshirt/2.jpg",
+    "PINK": "photos/320gsmheavytshirt/3.jpg",
+    "GREY": "photos/320gsmheavytshirt/4.jpg",
+    "BRWON": "photos/320gsmheavytshirt/5.jpg"
+   }
+  },
+  {
+   "id": "P",
+   "slug": "300gsmplaintshirt",
+   "name": "300 GSM PLAIN TSHIRT",
+   "category": "300 gsm",
+   "description": "HEAVY 300 GSM COTTON TSHIRT",
+   "material": "100% compact cotton",
+   "fit": "Boxy fit, true to size",
+   "price": 65,
+   "wholesale": null,
+   "colors": [
+    "SEA BLUE",
+    "WINE",
+    "CREAM",
+    "BROWN",
+    "PINK"
+   ],
+   "colorHex": {
+    "PINK": "#555555",
+    "WINE": "#555555",
+    "BROWN": "#555555",
+    "CREAM": "#555555",
+    "SEA BLUE": "#555555"
+   },
+   "sizes": [
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "XXL"
+   ],
+   "cover": "photos/300gsmplaintshirt/cover.jpg",
+   "photos": {
+    "SEA BLUE": "photos/300gsmplaintshirt/0.jpg",
+    "WINE": "photos/300gsmplaintshirt/1.jpg",
+    "CREAM": "photos/300gsmplaintshirt/2.jpg",
+    "BROWN": "photos/300gsmplaintshirt/3.jpg",
+    "PINK": "photos/300gsmplaintshirt/4.jpg"
+   }
+  }
+ ],
+ "delivery": {
+  "allowUnlisted": true,
+  "useLocation": true,
+  "locations": [
+   {
+    "id": "accra-accra-greater-accra",
+    "name": "ACCRA",
+    "area": "Korle-Klottey",
+    "region": "Greater Accra",
+    "fee": 35,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "tema-greater-accra",
+    "name": "Tema",
+    "area": "",
+    "region": "Greater Accra",
+    "fee": 45,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "la-nkwantanang-madina-municipal-district-greater-accra",
+    "name": "La-Nkwantanang-Madina Municipal District",
+    "area": "La-Nkwantanang-Madina",
+    "region": "Greater Accra",
+    "fee": 35,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "ablekuma-west-municipal-district-ablekum-greater-accra",
+    "name": "Ablekuma West Municipal District",
+    "area": "Ablekuma West",
+    "region": "Greater Accra",
+    "fee": 35,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "ablekuma-ga-central-greater-accra",
+    "name": "Ablekuma",
+    "area": "Ga Central",
+    "region": "Greater Accra",
+    "fee": 30,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": true
+   },
+   {
+    "id": "tudu-accra-greater-accra",
+    "name": "Tudu",
+    "area": "Accra",
+    "region": "Greater Accra",
+    "fee": 35,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "adenta-greater-accra",
+    "name": "Adenta",
+    "area": "",
+    "region": "Greater Accra",
+    "fee": 40,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "lapaz-accra-greater-accra",
+    "name": "Lapaz",
+    "area": "Accra",
+    "region": "Greater Accra",
+    "fee": 35,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "kwame-nkrumah-circle-accra-greater-accra",
+    "name": "Kwame Nkrumah Circle",
+    "area": "Accra",
+    "region": "Greater Accra",
+    "fee": 35,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "accra-international-airport-accra-greater-accra",
+    "name": "Accra International Airport",
+    "area": "Accra",
+    "region": "Greater Accra",
+    "fee": 35,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "east-legon-accra-greater-accra",
+    "name": "East Legon",
+    "area": "Accra",
+    "region": "Greater Accra",
+    "fee": 40,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "university-of-ghana-accra-greater-accra",
+    "name": "University of Ghana",
+    "area": "Accra",
+    "region": "Greater Accra",
+    "fee": 35,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "kumasi-ashanti",
+    "name": "Kumasi",
+    "area": "",
+    "region": "Ashanti",
+    "fee": 50,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "tarkwa-tarkwa-nsuaem-western",
+    "name": "Tarkwa",
+    "area": "Tarkwa-Nsuaem",
+    "region": "Western",
+    "fee": 45,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "takoradi-sekondi-takoradi-western",
+    "name": "Takoradi",
+    "area": "Sekondi Takoradi",
+    "region": "Western",
+    "fee": 35,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "cape-coast-central",
+    "name": "Cape Coast",
+    "area": "",
+    "region": "Central",
+    "fee": 50,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "winneba-effutu-central",
+    "name": "Winneba",
+    "area": "Effutu",
+    "region": "Central",
+    "fee": 50,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "olebu-amamoley-road-ablekuma-greater-accra",
+    "name": "Olebu Amamoley Road",
+    "area": "Ablekuma",
+    "region": "Greater Accra",
+    "fee": 30,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "ga-west-municipal-district-ga-west-greater-accra",
+    "name": "Ga West Municipal District",
+    "area": "Ga West",
+    "region": "Greater Accra",
+    "fee": 30,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "dome-ga-east-greater-accra",
+    "name": "Dome",
+    "area": "Ga East",
+    "region": "Greater Accra",
+    "fee": 30,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "achimota-accra-greater-accra",
+    "name": "Achimota",
+    "area": "Accra",
+    "region": "Greater Accra",
+    "fee": 35,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "spintex-accra-greater-accra",
+    "name": "Spintex",
+    "area": "Accra",
+    "region": "Greater Accra",
+    "fee": 40,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "kasoa-gomoa-east-central",
+    "name": "Kasoa",
+    "area": "Gomoa East",
+    "region": "Central",
+    "fee": 49.59,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "amasaman-ga-west-greater-accra",
+    "name": "Amasaman",
+    "area": "Ga West",
+    "region": "Greater Accra",
+    "fee": 30,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "tantra-accra-greater-accra",
+    "name": "Tantra",
+    "area": "Accra",
+    "region": "Greater Accra",
+    "fee": 30,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "teshie-accra-greater-accra",
+    "name": "Teshie",
+    "area": "Accra",
+    "region": "Greater Accra",
+    "fee": 40,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "sunyani-sunyani-west-bono",
+    "name": "Sunyani",
+    "area": "Sunyani West",
+    "region": "Bono",
+    "fee": 45,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "pokuase-greater-accra",
+    "name": "Pokuase",
+    "area": "Ga North",
+    "region": "Greater Accra",
+    "fee": 30,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "ofankor-greater-accra",
+    "name": "Ofankor",
+    "area": "Pokuase",
+    "region": "Greater Accra",
+    "fee": 30,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "dansoman-greater-accra",
+    "name": "Dansoman",
+    "area": "Accra",
+    "region": "Greater Accra",
+    "fee": 35,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "osu-greater-accra",
+    "name": "Osu",
+    "area": "Accra",
+    "region": "Greater Accra",
+    "fee": 40,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "madina-greater-accra",
+    "name": "Madina",
+    "area": "Adenta",
+    "region": "Greater Accra",
+    "fee": 35,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "dodowa-greater-accra",
+    "name": "Dodowa",
+    "area": "Shai-Osudoku",
+    "region": "Greater Accra",
+    "fee": 40,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "oyibi-greater-accra",
+    "name": "Oyibi",
+    "area": "Kpone-Katamanso",
+    "region": "Greater Accra",
+    "fee": 40,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "nungua-greater-accra",
+    "name": "Nungua",
+    "area": "Accra",
+    "region": "Greater Accra",
+    "fee": 40,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "ashaiman-greater-accra",
+    "name": "Ashaiman",
+    "area": "",
+    "region": "Greater Accra",
+    "fee": 45,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "kpone-greater-accra",
+    "name": "Kpone",
+    "area": "Kpone-Katamanso",
+    "region": "Greater Accra",
+    "fee": 45,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "prampram-greater-accra",
+    "name": "Prampram",
+    "area": "Ningo-Prampram",
+    "region": "Greater Accra",
+    "fee": 50,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "ada-foah-greater-accra",
+    "name": "Ada Foah",
+    "area": "Ada East",
+    "region": "Greater Accra",
+    "fee": 50,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "weija-greater-accra",
+    "name": "Weija",
+    "area": "Weija-Gbawe",
+    "region": "Greater Accra",
+    "fee": 40,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "gbawe-greater-accra",
+    "name": "Gbawe",
+    "area": "Weija-Gbawe",
+    "region": "Greater Accra",
+    "fee": 35,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "obuasi-ashanti",
+    "name": "Obuasi",
+    "area": "",
+    "region": "Ashanti",
+    "fee": 45,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "koforidua-eastern",
+    "name": "Koforidua",
+    "area": "New Juaben South",
+    "region": "Eastern",
+    "fee": 35,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "techiman-bono-east",
+    "name": "Techiman",
+    "area": "",
+    "region": "Bono East",
+    "fee": 45,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "tamale-northern",
+    "name": "Tamale",
+    "area": "",
+    "region": "Northern",
+    "fee": 45,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "asutsuare-shai-osudoku-greater-accra",
+    "name": "Asutsuare",
+    "area": "Shai-Osudoku",
+    "region": "Greater Accra",
+    "fee": 50,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "sege-ada-west-greater-accra",
+    "name": "Sege",
+    "area": "Ada West",
+    "region": "Greater Accra",
+    "fee": 50,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "big-ada-ada-east-greater-accra",
+    "name": "Big Ada",
+    "area": "Ada East",
+    "region": "Greater Accra",
+    "fee": 50,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "kasseh-ada-east-greater-accra",
+    "name": "Kasseh",
+    "area": "Ada East",
+    "region": "Greater Accra",
+    "fee": 50,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "afienya-ningo-prampram-greater-accra",
+    "name": "Afienya",
+    "area": "Ningo-Prampram",
+    "region": "Greater Accra",
+    "fee": 45,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "dawhenya-ningo-prampram-greater-accra",
+    "name": "Dawhenya",
+    "area": "Ningo-Prampram",
+    "region": "Greater Accra",
+    "fee": 45,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "old-ningo-ningo-prampram-greater-accra",
+    "name": "Old Ningo",
+    "area": "Ningo-Prampram",
+    "region": "Greater Accra",
+    "fee": 50,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "new-ningo-ningo-prampram-greater-accra",
+    "name": "New Ningo",
+    "area": "Ningo-Prampram",
+    "region": "Greater Accra",
+    "fee": 50,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "akplabanya-ada-west-greater-accra",
+    "name": "Akplabanya",
+    "area": "Ada West",
+    "region": "Greater Accra",
+    "fee": 50,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "koluedor-ada-west-greater-accra",
+    "name": "Koluedor",
+    "area": "Ada West",
+    "region": "Greater Accra",
+    "fee": 50,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "pute-ada-east-greater-accra",
+    "name": "Pute",
+    "area": "Ada East",
+    "region": "Greater Accra",
+    "fee": 50,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "agomeda-shai-osudoku-greater-accra",
+    "name": "Agomeda",
+    "area": "Shai-Osudoku",
+    "region": "Greater Accra",
+    "fee": 45,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "ayikuma-shai-osudoku-greater-accra",
+    "name": "Ayikuma",
+    "area": "Shai-Osudoku",
+    "region": "Greater Accra",
+    "fee": 40,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "doryumu-shai-osudoku-greater-accra",
+    "name": "Doryumu",
+    "area": "Shai-Osudoku",
+    "region": "Greater Accra",
+    "fee": 45,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "kodiabe-shai-osudoku-greater-accra",
+    "name": "Kodiabe",
+    "area": "Shai-Osudoku",
+    "region": "Greater Accra",
+    "fee": 45,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "manya-jorpanya-shai-osudoku-greater-accra",
+    "name": "Manya Jorpanya",
+    "area": "Shai-Osudoku",
+    "region": "Greater Accra",
+    "fee": 45,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "lashibi-sakumono-greater-accra",
+    "name": "Lashibi",
+    "area": "Sakumono",
+    "region": "Greater Accra",
+    "fee": 40,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "sakumono-tema-west-greater-accra",
+    "name": "Sakumono",
+    "area": "Tema West",
+    "region": "Greater Accra",
+    "fee": 40,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "katamanso-kpone-katamanso-greater-accra",
+    "name": "Katamanso",
+    "area": "Kpone-Katamanso",
+    "region": "Greater Accra",
+    "fee": 45,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "santeo-kpone-katamanso-greater-accra",
+    "name": "Santeo",
+    "area": "Kpone-Katamanso",
+    "region": "Greater Accra",
+    "fee": 40,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "tema-new-town-tema-greater-accra",
+    "name": "Tema New Town",
+    "area": "Tema",
+    "region": "Greater Accra",
+    "fee": 45,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "community-2-tema-greater-accra",
+    "name": "Community 2",
+    "area": "Tema",
+    "region": "Greater Accra",
+    "fee": 45,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "ngleshie-amanfro-ga-south-greater-accra",
+    "name": "Ngleshie Amanfro",
+    "area": "Ga South",
+    "region": "Greater Accra",
+    "fee": 40,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "kokrobite-ga-south-greater-accra",
+    "name": "Kokrobite",
+    "area": "Ga South",
+    "region": "Greater Accra",
+    "fee": 40,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "bortianor-ga-south-greater-accra",
+    "name": "Bortianor",
+    "area": "Ga South",
+    "region": "Greater Accra",
+    "fee": 40,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "oshiyie-ga-south-greater-accra",
+    "name": "Oshiyie",
+    "area": "Ga South",
+    "region": "Greater Accra",
+    "fee": 40,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "oblogo-weija-gbawe-greater-accra",
+    "name": "Oblogo",
+    "area": "Weija-Gbawe",
+    "region": "Greater Accra",
+    "fee": 40,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "medie-ga-west-greater-accra",
+    "name": "Medie",
+    "area": "Ga West",
+    "region": "Greater Accra",
+    "fee": 30,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "adjen-kotoku-ga-west-greater-accra",
+    "name": "Adjen Kotoku",
+    "area": "Ga West",
+    "region": "Greater Accra",
+    "fee": 30,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "kutunse-ga-west-greater-accra",
+    "name": "Kutunse",
+    "area": "Ga West",
+    "region": "Greater Accra",
+    "fee": 30,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "manhean-ga-west-greater-accra",
+    "name": "Manhean",
+    "area": "Ga West",
+    "region": "Greater Accra",
+    "fee": 30,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "sowutuom-ga-central-greater-accra",
+    "name": "Sowutuom",
+    "area": "Ga Central",
+    "region": "Greater Accra",
+    "fee": 30,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "anyaa-sowutuom-greater-accra",
+    "name": "Anyaa",
+    "area": "Sowutuom",
+    "region": "Greater Accra",
+    "fee": 30,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "awoshie-accra-greater-accra",
+    "name": "Awoshie",
+    "area": "Accra",
+    "region": "Greater Accra",
+    "fee": 35,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "santa-maria-sowutuom-greater-accra",
+    "name": "Santa Maria",
+    "area": "Sowutuom",
+    "region": "Greater Accra",
+    "fee": 30,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "odorkor-accra-greater-accra",
+    "name": "Odorkor",
+    "area": "Accra",
+    "region": "Greater Accra",
+    "fee": 35,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "darkuman-accra-greater-accra",
+    "name": "Darkuman",
+    "area": "Accra",
+    "region": "Greater Accra",
+    "fee": 35,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "mallam-gbawe-greater-accra",
+    "name": "Mallam",
+    "area": "Gbawe",
+    "region": "Greater Accra",
+    "fee": 35,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "chorkor-accra-greater-accra",
+    "name": "Chorkor",
+    "area": "Accra",
+    "region": "Greater Accra",
+    "fee": 35,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "korle-gonno-accra-greater-accra",
+    "name": "Korle Gonno",
+    "area": "Accra",
+    "region": "Greater Accra",
+    "fee": 35,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "mamprobi-accra-greater-accra",
+    "name": "Mamprobi",
+    "area": "Accra",
+    "region": "Greater Accra",
+    "fee": 35,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "lartebiokorshie-accra-greater-accra",
+    "name": "Lartebiokorshie",
+    "area": "Accra",
+    "region": "Greater Accra",
+    "fee": 35,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "abokobi-ga-east-greater-accra",
+    "name": "Abokobi",
+    "area": "Ga East",
+    "region": "Greater Accra",
+    "fee": 35,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "oyarifa-la-nkwantanang-madina-greater-accra",
+    "name": "Oyarifa",
+    "area": "La-Nkwantanang-Madina",
+    "region": "Greater Accra",
+    "fee": 40,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "pantang-aboman-greater-accra",
+    "name": "Pantang",
+    "area": "Aboman",
+    "region": "Greater Accra",
+    "fee": 35,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "otinibi-la-nkwantanang-madina-greater-accra",
+    "name": "Otinibi",
+    "area": "La-Nkwantanang-Madina",
+    "region": "Greater Accra",
+    "fee": 40,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "ashaley-botwe-madina-greater-accra",
+    "name": "Ashaley Botwe",
+    "area": "Madina",
+    "region": "Greater Accra",
+    "fee": 40,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "haatso-dome-greater-accra",
+    "name": "Haatso",
+    "area": "Dome",
+    "region": "Greater Accra",
+    "fee": 35,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "kwabenya-dome-greater-accra",
+    "name": "Kwabenya",
+    "area": "Dome",
+    "region": "Greater Accra",
+    "fee": 30,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "taifa-dome-greater-accra",
+    "name": "Taifa",
+    "area": "Dome",
+    "region": "Greater Accra",
+    "fee": 30,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "legon-accra-greater-accra",
+    "name": "Legon",
+    "area": "Accra",
+    "region": "Greater Accra",
+    "fee": 35,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "dzorwulu-accra-greater-accra",
+    "name": "Dzorwulu",
+    "area": "Accra",
+    "region": "Greater Accra",
+    "fee": 35,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "roman-ridge-accra-greater-accra",
+    "name": "Roman Ridge",
+    "area": "Accra",
+    "region": "Greater Accra",
+    "fee": 35,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "airport-residential-area-accra-greater-accra",
+    "name": "Airport Residential Area",
+    "area": "Accra",
+    "region": "Greater Accra",
+    "fee": 35,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "shiashie-accra-greater-accra",
+    "name": "Shiashie",
+    "area": "Accra",
+    "region": "Greater Accra",
+    "fee": 40,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "adjiringanor-adenta-greater-accra",
+    "name": "Adjiringanor",
+    "area": "Adenta",
+    "region": "Greater Accra",
+    "fee": 40,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "east-legon-hills-kpone-katamanso-greater-accra",
+    "name": "East Legon Hills",
+    "area": "Kpone-Katamanso",
+    "region": "Greater Accra",
+    "fee": 40,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "la-accra-greater-accra",
+    "name": "La",
+    "area": "Accra",
+    "region": "Greater Accra",
+    "fee": 40,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "labone-accra-greater-accra",
+    "name": "Labone",
+    "area": "Accra",
+    "region": "Greater Accra",
+    "fee": 40,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "cantonments-accra-greater-accra",
+    "name": "Cantonments",
+    "area": "Accra",
+    "region": "Greater Accra",
+    "fee": 40,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "ringway-estates-accra-greater-accra",
+    "name": "Ringway Estates",
+    "area": "Accra",
+    "region": "Greater Accra",
+    "fee": 40,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "ridge-accra-greater-accra",
+    "name": "Ridge",
+    "area": "Accra",
+    "region": "Greater Accra",
+    "fee": 35,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "asylum-down-accra-greater-accra",
+    "name": "Asylum Down",
+    "area": "Accra",
+    "region": "Greater Accra",
+    "fee": 35,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "adabraka-accra-greater-accra",
+    "name": "Adabraka",
+    "area": "Accra",
+    "region": "Greater Accra",
+    "fee": 35,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "kokomlemle-accra-greater-accra",
+    "name": "Kokomlemle",
+    "area": "Accra",
+    "region": "Greater Accra",
+    "fee": 35,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "nima-accra-greater-accra",
+    "name": "Nima",
+    "area": "Accra",
+    "region": "Greater Accra",
+    "fee": 35,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "kanda-accra-greater-accra",
+    "name": "Kanda",
+    "area": "Accra",
+    "region": "Greater Accra",
+    "fee": 35,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "accra-new-town-accra-greater-accra",
+    "name": "Accra New Town",
+    "area": "Accra",
+    "region": "Greater Accra",
+    "fee": 35,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "alajo-accra-greater-accra",
+    "name": "Alajo",
+    "area": "Accra",
+    "region": "Greater Accra",
+    "fee": 35,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "tesano-accra-greater-accra",
+    "name": "Tesano",
+    "area": "Accra",
+    "region": "Greater Accra",
+    "fee": 35,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "abeka-accra-greater-accra",
+    "name": "Abeka",
+    "area": "Accra",
+    "region": "Greater Accra",
+    "fee": 35,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "north-kaneshie-accra-greater-accra",
+    "name": "North Kaneshie",
+    "area": "Accra",
+    "region": "Greater Accra",
+    "fee": 35,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "kaneshie-accra-greater-accra",
+    "name": "Kaneshie",
+    "area": "Accra",
+    "region": "Greater Accra",
+    "fee": 35,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "south-odorkor-accra-greater-accra",
+    "name": "South Odorkor",
+    "area": "Accra",
+    "region": "Greater Accra",
+    "fee": 35,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "jamestown-accra-greater-accra",
+    "name": "Jamestown",
+    "area": "Accra",
+    "region": "Greater Accra",
+    "fee": 35,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "korle-bu-accra-greater-accra",
+    "name": "Korle Bu",
+    "area": "Accra",
+    "region": "Greater Accra",
+    "fee": 35,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "bukom-accra-greater-accra",
+    "name": "Bukom",
+    "area": "Accra",
+    "region": "Greater Accra",
+    "fee": 35,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "baatsona-sakumono-greater-accra",
+    "name": "Baatsona",
+    "area": "Sakumono",
+    "region": "Greater Accra",
+    "fee": 40,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "kwashieman-accra-greater-accra",
+    "name": "Kwashieman",
+    "area": "Accra",
+    "region": "Greater Accra",
+    "fee": 35,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "amrahia-oyarifa-greater-accra",
+    "name": "Amrahia",
+    "area": "Oyarifa",
+    "region": "Greater Accra",
+    "fee": 40,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "ashongman-abokobi-greater-accra",
+    "name": "Ashongman",
+    "area": "Abokobi",
+    "region": "Greater Accra",
+    "fee": 35,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "agbogba-ga-east-greater-accra",
+    "name": "Agbogba",
+    "area": "Ga East",
+    "region": "Greater Accra",
+    "fee": 35,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "abelemkpe-accra-greater-accra",
+    "name": "Abelemkpe",
+    "area": "Accra",
+    "region": "Greater Accra",
+    "fee": 35,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "trassaco-valley-adenta-greater-accra",
+    "name": "Trasacco Valley",
+    "area": "Adenta",
+    "region": "Greater Accra",
+    "fee": 40,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "mamobi-accra-greater-accra",
+    "name": "Mamobi",
+    "area": "Accra",
+    "region": "Greater Accra",
+    "fee": 35,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "kotobabi-accra-greater-accra",
+    "name": "Kotobabi",
+    "area": "Accra",
+    "region": "Greater Accra",
+    "fee": 35,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "usshertown-accra-greater-accra",
+    "name": "Usshertown",
+    "area": "Accra",
+    "region": "Greater Accra",
+    "fee": 35,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "zenu-kpone-katamanso-greater-accra",
+    "name": "Zenu",
+    "area": "Kpone-Katamanso",
+    "region": "Greater Accra",
+    "fee": 45,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "appolonia-kpone-katamanso-greater-accra",
+    "name": "Appolonia",
+    "area": "Kpone-Katamanso",
+    "region": "Greater Accra",
+    "fee": 45,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "adjei-kojo-tema-west-greater-accra",
+    "name": "Adjei Kojo",
+    "area": "Tema West",
+    "region": "Greater Accra",
+    "fee": 45,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "sebrepor-kpone-katamanso-greater-accra",
+    "name": "Sebrepor",
+    "area": "Kpone-Katamanso",
+    "region": "Greater Accra",
+    "fee": 45,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "tuba-ga-south-greater-accra",
+    "name": "Tuba",
+    "area": "Ga South",
+    "region": "Greater Accra",
+    "fee": 40,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "borteyman-adenta-greater-accra",
+    "name": "Borteyman",
+    "area": "Adenta",
+    "region": "Greater Accra",
+    "fee": 40,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "frafraha-adenta-greater-accra",
+    "name": "Frafraha",
+    "area": "Adenta",
+    "region": "Greater Accra",
+    "fee": 40,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "samsam-ga-west-greater-accra",
+    "name": "Samsam",
+    "area": "Ga West",
+    "region": "Greater Accra",
+    "fee": 30,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "onyansana-ga-west-greater-accra",
+    "name": "Onyansana",
+    "area": "Ga West",
+    "region": "Greater Accra",
+    "fee": 30,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "totope-ada-east-greater-accra",
+    "name": "Totope",
+    "area": "Ada East",
+    "region": "Greater Accra",
+    "fee": 50,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "totimekope-ada-east-greater-accra",
+    "name": "Totimekope",
+    "area": "Ada East",
+    "region": "Greater Accra",
+    "fee": 50,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "tema-community-3-tema-greater-accra",
+    "name": "Tema Community 3",
+    "area": "Tema",
+    "region": "Greater Accra",
+    "fee": 45,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "tema-community-4-tema-greater-accra",
+    "name": "Tema Community 4",
+    "area": "Tema",
+    "region": "Greater Accra",
+    "fee": 45,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "tema-community-5-tema-greater-accra",
+    "name": "Tema Community 5",
+    "area": "Tema",
+    "region": "Greater Accra",
+    "fee": 45,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "tema-community-6-tema-greater-accra",
+    "name": "Tema Community 6",
+    "area": "Tema",
+    "region": "Greater Accra",
+    "fee": 45,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "tema-community-7-tema-greater-accra",
+    "name": "Tema Community 7",
+    "area": "Tema",
+    "region": "Greater Accra",
+    "fee": 45,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "tema-community-8-tema-greater-accra",
+    "name": "Tema Community 8",
+    "area": "Tema",
+    "region": "Greater Accra",
+    "fee": 45,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "tema-community-9-tema-greater-accra",
+    "name": "Tema Community 9",
+    "area": "Tema",
+    "region": "Greater Accra",
+    "fee": 45,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "tema-community-10-tema-greater-accra",
+    "name": "Tema Community 10",
+    "area": "Tema",
+    "region": "Greater Accra",
+    "fee": 45,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "tema-community-11-tema-greater-accra",
+    "name": "Tema Community 11",
+    "area": "Tema",
+    "region": "Greater Accra",
+    "fee": 45,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "tema-community-12-tema-greater-accra",
+    "name": "Tema Community 12",
+    "area": "Tema",
+    "region": "Greater Accra",
+    "fee": 45,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "klagon-tema-west-greater-accra",
+    "name": "Klagon",
+    "area": "Tema West",
+    "region": "Greater Accra",
+    "fee": 40,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "lebanon-ashaiman-greater-accra",
+    "name": "Lebanon",
+    "area": "Ashaiman",
+    "region": "Greater Accra",
+    "fee": 45,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "okpoi-gonno-accra-greater-accra",
+    "name": "Okpoi Gonno",
+    "area": "Accra",
+    "region": "Greater Accra",
+    "fee": 40,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "tema-community-18-sakumono-greater-accra",
+    "name": "Tema Community 18",
+    "area": "Sakumono",
+    "region": "Greater Accra",
+    "fee": 40,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "tema-community-19-sakumono-greater-accra",
+    "name": "Tema Community 19",
+    "area": "Sakumono",
+    "region": "Greater Accra",
+    "fee": 40,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "tema-community-20-sakumono-greater-accra",
+    "name": "Tema Community 20",
+    "area": "Sakumono",
+    "region": "Greater Accra",
+    "fee": 40,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "dawa-ningo-prampram-greater-accra",
+    "name": "Dawa",
+    "area": "Ningo-Prampram",
+    "region": "Greater Accra",
+    "fee": 50,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   },
+   {
+    "id": "michel-camp-kpone-katamanso-greater-accra",
+    "name": "Michel Camp",
+    "area": "Kpone-Katamanso",
+    "region": "Greater Accra",
+    "fee": 45,
+    "note": "Package will be delivered today or tomorrow.",
+    "featured": false
+   }
+  ]
+ }
+}

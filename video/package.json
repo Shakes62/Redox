@@ -1,0 +1,33 @@
+{
+  "name": "redox-films",
+  "private": true,
+  "version": "1.0.0",
+  "description": "REDOXDESIGNX motion film (the range, then how to order), built with Remotion",
+  "scripts": {
+    "studio": "remotion studio",
+    "render": "remotion render Redox-Vertical out/redoxdesignx-how-to-order-9x16.mp4 --codec=h264 --crf=16 --x264-preset=slow --color-space=bt709 --pixel-format=yuv420p && python scripts/master.py out/redoxdesignx-how-to-order-9x16.mp4",
+    "render:wide": "remotion render Redox-Wide out/redoxdesignx-how-to-order-16x9.mp4 --codec=h264 --crf=16 --x264-preset=slow --color-space=bt709 --pixel-format=yuv420p && python scripts/master.py out/redoxdesignx-how-to-order-16x9.mp4",
+    "render:all": "npm run render && npm run render:wide && npm run captions",
+    "still": "remotion still Redox-Vertical out/frame.png --frame=200",
+    "typecheck": "tsc --noEmit",
+    "voice": "python scripts/vo.py",
+    "photos": "node scripts/photos.mjs",
+    "captions": "python scripts/captions.py"
+  },
+  "dependencies": {
+    "@phosphor-icons/react": "2.1.10",
+    "@remotion/cli": "4.0.541",
+    "@remotion/fonts": "4.0.541",
+    "@remotion/google-fonts": "4.0.541",
+    "@remotion/transitions": "4.0.541",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "remotion": "4.0.541",
+    "uqr": "0.1.2"
+  },
+  "devDependencies": {
+    "@types/node": "20.19.24",
+    "@types/react": "18.3.12",
+    "typescript": "5.6.3"
+  }
+}

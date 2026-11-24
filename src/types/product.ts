@@ -175,6 +175,13 @@ export interface Order {
   momoNumber?: string;
   status: string;
   createdAt: string;
+  /**
+   * When the order first entered Processing or Shipped. Set only while it is in
+   * one of those states; 24 hours later it is marked Delivered automatically.
+   */
+  fulfilmentStartedAt?: string;
+  /** Set when the order was marked Delivered automatically rather than by hand. */
+  autoDeliveredAt?: string;
   source: OrderSource;
   /**
    * Caller-supplied key that makes order creation idempotent. A retried or

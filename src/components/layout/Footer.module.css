@@ -43,21 +43,6 @@
   text-transform: uppercase;
 }
 
-.tagline span {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  color: var(--fg-3);
-  font-family: var(--font-body);
-  font-size: 0.85rem;
-  font-weight: 600;
-  text-transform: none;
-}
-
-.tagline svg {
-  color: var(--accent);
-}
-
 .links {
   display: grid;
   grid-template-columns: repeat(2, max-content);

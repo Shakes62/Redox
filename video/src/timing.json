@@ -1,0 +1,6 @@
+{
+  "_note": "Shared timing for the REDOXDESIGNX film, read by src/timeline.ts and scripts/vo.py. vo.py writes the scene order and lengths (DESIGN frames, 30 per design-second) to src/films/redox/timing.json. SPEED plays the whole film faster without touching the audio sync.",
+  "fps": 30,
+  "speed": 1.3,
+  "transition": 15
+}

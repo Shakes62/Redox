@@ -53,7 +53,8 @@ test('stock and order creation commit or roll back together', async () => {
         payment_verified_by TEXT, gateway_response TEXT, stock_reserved BOOLEAN,
         stock_released BOOLEAN, sms_sent BOOLEAN, sms_deferred BOOLEAN NOT NULL DEFAULT FALSE, discount NUMERIC, source TEXT,
         client_request_id TEXT UNIQUE, payment_note TEXT, extras JSONB,
-        delivery_method TEXT NOT NULL DEFAULT 'none', delivery_fee NUMERIC NOT NULL DEFAULT 0
+        delivery_method TEXT NOT NULL DEFAULT 'none', delivery_fee NUMERIC NOT NULL DEFAULT 0,
+        fulfilment_started_at TIMESTAMPTZ, auto_delivered_at TIMESTAMPTZ
       );
       CREATE UNIQUE INDEX orders_payment_reference_uidx ON orders (payment_reference)
         WHERE payment_reference IS NOT NULL;

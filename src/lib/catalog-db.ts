@@ -16,6 +16,12 @@ import {
 import { SERVICE_CHARGE_RATE } from '@/lib/format';
 import { normalizeWholesaleRule } from '@/lib/wholesale';
 import { normalizeDeliveryMethod } from '@/lib/delivery';
+import {
+  AUTO_DELIVER_AFTER_HOURS,
+  isAutoDeliveryDue,
+  isInFulfilment,
+  nextFulfilmentStartedAt
+} from '@/lib/auto-delivery';
 import type {
   Product,
   Drop,
@@ -174,11 +180,15 @@ async function ensureProductsSchema(): Promise<void> {
 
   if (!productsSchemaPromise) {
     productsSchemaPromise = (async () => {
+      // `sort_order` is the shop order the admin arranges: lowest shows first.
+      // NULL (never arranged) falls back to newest first, which is exactly how
+      // the shop was ordered before the column existed.
       await sql`
         ALTER TABLE products
           ADD COLUMN IF NOT EXISTS visibility VARCHAR(20) NOT NULL DEFAULT 'visible',
           ADD COLUMN IF NOT EXISTS wholesale_min_quantity INTEGER,
-          ADD COLUMN IF NOT EXISTS wholesale_price NUMERIC
+          ADD COLUMN IF NOT EXISTS wholesale_price NUMERIC,
+          ADD COLUMN IF NOT EXISTS sort_order INTEGER
       `;
     })().catch((error) => {
       // Let the next caller retry rather than caching a permanent failure.
@@ -194,7 +204,9 @@ export const getDbProducts = cache(async (): Promise<Product[]> => {
   if (!isDbConfigured) return mockProducts;
   try {
     await ensureProductsSchema();
-    const rows = await sql`SELECT * FROM products ORDER BY created_at DESC`;
+    // Every storefront list (homepage, shop, search, collections) reads through
+    // here, so this one ORDER BY is what puts the admin's chosen products first.
+    const rows = await sql`SELECT * FROM products ORDER BY sort_order ASC NULLS LAST, created_at DESC`;
     return rows.map(mapProductRow);
   } catch (error) {
     console.error('Failed to fetch products from Neon Postgres:', error);
@@ -279,19 +291,23 @@ export async function saveDbProduct(p: Product): Promise<boolean> {
       variants: (p.variants || []).map(normalizeVariantStock)
     };
 
+    // A new product takes the front of the shop (one place ahead of the current
+    // first). Editing an existing product never moves it: `sort_order` is
+    // deliberately absent from the UPDATE list below.
     await sql`
       INSERT INTO products (
         id, slug, name, collection_slug, collection_name, category, price, badge,
         image, secondary_image, image_alt, colors, color_hex, variants,
         description, story, details, care, material, fit, rating, review_count, color_images,
-        visibility, wholesale_min_quantity, wholesale_price
+        visibility, wholesale_min_quantity, wholesale_price, sort_order
       ) VALUES (
         ${normalizedProduct.id}, ${normalizedProduct.slug}, ${normalizedProduct.name}, ${normalizedProduct.collectionSlug}, ${normalizedProduct.collectionName}, ${normalizedProduct.category},
         ${normalizedProduct.price}, ${normalizedProduct.badge || null}, ${normalizedProduct.image}, ${normalizedProduct.secondaryImage || null}, ${normalizedProduct.imageAlt},
         ${normalizedProduct.colors}, ${JSON.stringify(normalizedProduct.colorHex)}, ${JSON.stringify(normalizedProduct.variants)},
         ${normalizedProduct.description}, ${normalizedProduct.story}, ${normalizedProduct.details}, ${normalizedProduct.care}, ${normalizedProduct.material}, ${normalizedProduct.fit},
         ${normalizedProduct.rating}, ${normalizedProduct.reviewCount}, ${JSON.stringify(normalizedProduct.colorImages || {})},
-        ${normalizedProduct.visibility}, ${wholesale?.minQuantity ?? null}, ${wholesale?.unitPrice ?? null}
+        ${normalizedProduct.visibility}, ${wholesale?.minQuantity ?? null}, ${wholesale?.unitPrice ?? null},
+        (SELECT COALESCE(MIN(sort_order), 1) - 1 FROM products)
       )
       ON CONFLICT (id) DO UPDATE SET
         visibility = EXCLUDED.visibility,
@@ -325,6 +341,29 @@ export async function saveDbProduct(p: Product): Promise<boolean> {
     console.error('Failed to save product to Neon Postgres:', error);
     throw error;
   }
+}
+
+/**
+ * Saves the shop order the admin arranged: `ids[0]` shows first everywhere the
+ * storefront lists products. One statement, so the shop never shows a
+ * half-applied order.
+ *
+ * Products missing from the list keep their current place number. That covers
+ * a product created in another tab after this list was loaded — it stays at the
+ * front, where new products go, instead of being shuffled to the back.
+ *
+ * Returns how many products were placed.
+ */
+export async function saveDbProductOrder(ids: string[]): Promise<number> {
+  if (!isDbConfigured || ids.length === 0) return 0;
+  await ensureProductsSchema();
+  const rows = await sql`
+    UPDATE products AS p SET sort_order = o.position
+    FROM jsonb_array_elements_text(${JSON.stringify(ids)}::jsonb) WITH ORDINALITY AS o(id, position)
+    WHERE p.id = o.id
+    RETURNING p.id
+  `;
+  return rows.length;
 }
 
 export async function deleteDbProduct(productId: string): Promise<boolean> {
@@ -808,6 +847,75 @@ async function ensureOrdersSchema(): Promise<void> {
           ADD COLUMN IF NOT EXISTS delivery_fee NUMERIC(10, 2) NOT NULL DEFAULT 0
       `;
 
+      // Automatic delivery (see lib/auto-delivery.ts). `fulfilment_started_at`
+      // is the 24-hour clock: set when an order first enters Processing or
+      // Shipped, kept while it moves between them, cleared when it leaves.
+      await sql`
+        ALTER TABLE orders
+          ADD COLUMN IF NOT EXISTS fulfilment_started_at TIMESTAMP WITH TIME ZONE,
+          ADD COLUMN IF NOT EXISTS auto_delivered_at TIMESTAMP WITH TIME ZONE
+      `;
+
+      // Orders already in fulfilment when this shipped have no clock. When they
+      // went in is unknown, so their 24 hours start now: nothing is marked
+      // delivered early. Also catches any row an older build moved into
+      // fulfilment during a deploy.
+      await sql`
+        UPDATE orders SET fulfilment_started_at = NOW()
+        WHERE status IN ('Processing', 'Shipped') AND fulfilment_started_at IS NULL
+      `;
+
+      // Every hand-made status change goes through here, so the clock can
+      // never drift from the status it belongs to.
+      await sql`
+        CREATE OR REPLACE FUNCTION set_order_status(p_id INTEGER, p_status TEXT)
+        RETURNS SETOF orders LANGUAGE plpgsql AS $fn$
+        BEGIN
+          RETURN QUERY UPDATE orders SET
+            status = p_status,
+            fulfilment_started_at = CASE
+              WHEN p_status NOT IN ('Processing', 'Shipped') THEN NULL
+              WHEN orders.status IN ('Processing', 'Shipped')
+                THEN COALESCE(orders.fulfilment_started_at, NOW())
+              ELSE NOW()
+            END,
+            auto_delivered_at = CASE
+              WHEN p_status = 'Delivered' THEN orders.auto_delivered_at ELSE NULL
+            END
+          WHERE orders.id = p_id
+          RETURNING *;
+        END;
+        $fn$;
+      `;
+
+      // Marks every order whose clock has run out as Delivered, and returns
+      // their ids. Safe to run from any number of places at once: an order that
+      // another caller just delivered no longer matches the WHERE.
+      await sql`
+        CREATE OR REPLACE FUNCTION deliver_due_orders(p_hours INTEGER)
+        RETURNS SETOF INTEGER LANGUAGE plpgsql AS $fn$
+        BEGIN
+          RETURN QUERY UPDATE orders SET
+            status = 'Delivered',
+            fulfilment_started_at = NULL,
+            auto_delivered_at = NOW()
+          WHERE orders.status IN ('Processing', 'Shipped')
+            AND orders.fulfilment_started_at IS NOT NULL
+            AND orders.fulfilment_started_at <= NOW() - make_interval(hours => p_hours)
+          RETURNING orders.id;
+        END;
+        $fn$;
+      `;
+
+      try {
+        await sql`
+          CREATE INDEX IF NOT EXISTS orders_fulfilment_clock_idx
+          ON orders (fulfilment_started_at) WHERE status IN ('Processing', 'Shipped')
+        `;
+      } catch (error) {
+        console.error('[orders] Could not create the fulfilment clock index:', error);
+      }
+
       await sql`
         CREATE TABLE IF NOT EXISTS schema_migrations (
           name VARCHAR(160) PRIMARY KEY,
@@ -990,7 +1098,7 @@ async function ensureOrdersSchema(): Promise<void> {
             amount_paid, payment_channel, paystack_transaction_id, last_verified_at,
             payment_verified_by, gateway_response, stock_reserved, stock_released,
             sms_sent, sms_deferred, discount, source, client_request_id, payment_note, extras,
-            delivery_method, delivery_fee
+            delivery_method, delivery_fee, fulfilment_started_at
           ) VALUES (
             p_order->>'productId', p_order->>'productName', p_order->>'productSlug',
             p_order->>'selectedColor', p_order->>'selectedSize', (p_order->>'price')::NUMERIC,
@@ -1009,7 +1117,8 @@ async function ensureOrdersSchema(): Promise<void> {
             COALESCE((p_order->>'discount')::NUMERIC, 0),
             COALESCE(p_order->>'source', 'web'), p_order->>'clientRequestId',
             p_order->>'paymentNote', COALESCE(p_order->'extras', '[]'::jsonb),
-            COALESCE(p_order->>'deliveryMethod', 'none'), COALESCE((p_order->>'deliveryFee')::NUMERIC, 0)
+            COALESCE(p_order->>'deliveryMethod', 'none'), COALESCE((p_order->>'deliveryFee')::NUMERIC, 0),
+            CASE WHEN COALESCE(p_order->>'status', 'Pending') IN ('Processing', 'Shipped') THEN NOW() END
           ) RETURNING *;
         END;
         $fn$;
@@ -1336,6 +1445,8 @@ function mapOrderRow(row: any): Order {
     momoNumber: row.momo_number || undefined,
     status: row.status,
     createdAt: new Date(row.created_at).toISOString(),
+    fulfilmentStartedAt: toIso(row.fulfilment_started_at),
+    autoDeliveredAt: toIso(row.auto_delivered_at),
     source: row.source === 'admin' ? 'admin' : 'web',
     clientRequestId: row.client_request_id || undefined,
 
@@ -1357,10 +1468,53 @@ function mapOrderRow(row: any): Order {
   };
 }
 
-export async function getDbOrders(): Promise<Order[]> {
-  if (!isDbConfigured) return sandboxOrders;
+/**
+ * Marks every order that has been in Processing or Shipped for 24 hours as
+ * Delivered, and returns their ids.
+ *
+ * Runs before every read that shows an order's status to a person (the admin
+ * list, customer tracking) and from the scheduled cron, so the status is right
+ * the moment anyone looks — whether or not the cron is set up. Never throws: a
+ * failed sweep must not stop the merchant from seeing their orders.
+ */
+export async function deliverDueDbOrders(): Promise<number[]> {
+  if (!isDbConfigured) {
+    const now = new Date();
+    const delivered: number[] = [];
+    for (const order of sandboxOrders) {
+      if (!isAutoDeliveryDue(order, now)) continue;
+      order.status = 'Delivered';
+      order.fulfilmentStartedAt = undefined;
+      order.autoDeliveredAt = now.toISOString();
+      delivered.push(order.id);
+    }
+    return delivered;
+  }
+
   try {
     await ensureOrdersSchema();
+    const rows = await sql`
+      SELECT delivered_id FROM deliver_due_orders(${AUTO_DELIVER_AFTER_HOURS}::INTEGER) AS delivered_id
+    `;
+    const ids: number[] = rows.map((row: { delivered_id: unknown }) => Number(row.delivered_id));
+    if (ids.length > 0) {
+      console.info(`[orders] Marked ${ids.length} order(s) delivered automatically: ${ids.map((id) => `#RD-${id}`).join(', ')}`);
+    }
+    return ids;
+  } catch (error) {
+    console.error('[orders] Automatic delivery sweep failed:', error);
+    return [];
+  }
+}
+
+export async function getDbOrders(): Promise<Order[]> {
+  if (!isDbConfigured) {
+    await deliverDueDbOrders();
+    return sandboxOrders;
+  }
+  try {
+    await ensureOrdersSchema();
+    await deliverDueDbOrders();
     const rows = await sql`SELECT * FROM orders ORDER BY created_at DESC`;
     return rows.map(mapOrderRow);
   } catch (error) {
@@ -1446,6 +1600,9 @@ export async function getDbOrderById(id: number): Promise<Order | undefined> {
 export async function getDbOrderByPublicReference(reference: string): Promise<Order | undefined> {
   if (!isDbConfigured) throw new Error('Order tracking is temporarily unavailable.');
   await ensureOrdersSchema();
+  // A customer checking on a shipped order should see "Delivered" the moment
+  // its 24 hours are up, not whenever the admin next opens the panel.
+  await deliverDueDbOrders();
   const trimmed = reference.trim();
   const id = parsePublicOrderId(trimmed);
   const rows = await sql`
@@ -1517,11 +1674,13 @@ export async function addDbOrder(o: NewOrderInput): Promise<Order> {
   };
 
   if (!isDbConfigured) {
+    const createdAt = new Date().toISOString();
     const newOrder: Order = {
       ...o,
       ...defaults,
       id: Math.floor(Math.random() * 100000),
-      createdAt: new Date().toISOString()
+      createdAt,
+      fulfilmentStartedAt: isInFulfilment(o.status) ? createdAt : undefined
     };
     sandboxOrders.unshift(newOrder);
     return newOrder;
@@ -1539,7 +1698,7 @@ export async function addDbOrder(o: NewOrderInput): Promise<Order> {
         paystack_transaction_id, last_verified_at, payment_verified_by, gateway_response,
         stock_reserved, stock_released, sms_sent, sms_deferred,
         discount, source, client_request_id, payment_note, extras,
-        delivery_method, delivery_fee
+        delivery_method, delivery_fee, fulfilment_started_at
       ) VALUES (
         ${o.productId}, ${o.productName}, ${o.productSlug}, ${o.selectedColor}, ${o.selectedSize}, ${o.price},
         ${o.customerName}, ${o.customerPhone}, ${o.customerEmail}, ${o.shippingAddress}, ${o.shippingCity},
@@ -1550,7 +1709,8 @@ export async function addDbOrder(o: NewOrderInput): Promise<Order> {
         ${o.paymentVerifiedBy || null}, ${o.gatewayResponse || null},
         ${defaults.stockReserved}, ${defaults.stockReleased}, ${defaults.smsSent}, ${defaults.smsDeferred},
         ${defaults.discount}, ${defaults.source}, ${o.clientRequestId || null}, ${o.paymentNote || null},
-        ${JSON.stringify(defaults.extras)}, ${defaults.deliveryMethod}, ${defaults.deliveryFee}
+        ${JSON.stringify(defaults.extras)}, ${defaults.deliveryMethod}, ${defaults.deliveryFee},
+        ${isInFulfilment(o.status) ? 'now' : null}::TIMESTAMPTZ
       )
       RETURNING *;
     `;
@@ -2023,19 +2183,27 @@ export async function listDbOrdersMissingSms(limit: number): Promise<Order[]> {
   }
 }
 
-/** Updates fulfilment status only. Payment state is never touched from here. */
+/**
+ * Updates fulfilment status only. Payment state is never touched from here.
+ * Starts, keeps or stops the 24-hour auto-delivery clock to match.
+ */
 export async function setDbOrderStatus(id: number, status: string): Promise<Order | undefined> {
   if (!isDbConfigured) {
     const order = sandboxOrders.find((candidate) => candidate.id === id);
     if (!order) return undefined;
+    order.fulfilmentStartedAt = nextFulfilmentStartedAt(
+      order.status,
+      status,
+      order.fulfilmentStartedAt,
+      new Date().toISOString()
+    );
+    if (status !== 'Delivered') order.autoDeliveredAt = undefined;
     order.status = status;
     return order;
   }
 
   await ensureOrdersSchema();
-  const rows = await sql`
-    UPDATE orders SET status = ${status} WHERE id = ${id} RETURNING *;
-  `;
+  const rows = await sql`SELECT * FROM set_order_status(${id}::INTEGER, ${status}::TEXT)`;
   return rows.length > 0 ? mapOrderRow(rows[0]) : undefined;
 }
 
